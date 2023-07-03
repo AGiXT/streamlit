@@ -19,7 +19,7 @@ jobs:
     with:
       registry-dockerhub-enable: ${{ github.event_name != 'pull_request' }}
       registry-repo-name: streamlit
-      registry-readme: ./docs/README.md
+      registry-readme: ./README.md
       tags: |
         type=schedule
         type=ref,event=branch
