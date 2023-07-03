@@ -1,0 +1,29 @@
+name: Publish Docker image
+
+permissions:
+  packages: write
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["main"]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-streamlit:
+    uses: josh-xt/AGiXT/.github/workflows/operation-docker-build-publish.yml@main
+    with:
+      registry-dockerhub-enable: ${{ github.event_name != 'pull_request' }}
+      registry-repo-name: streamlit
+      registry-readme: ./docs/README.md
+      tags: |
+        type=schedule
+        type=ref,event=branch
+        type=semver,pattern={{version}}
+      platforms: linux/amd64,linux/arm64/v8
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
