@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./data:/var/lib/postgresql/data:rw
+  agixt:
+    image: joshxt/agixt:latest
+    init: true
+    depends_on:
+      - db
+    env_file:
+      - .env.example
+    environment:
+      - POSTGRES_SERVER=${POSTGRES_SERVER:-db}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - UVICORN_WORKERS=${UVICORN_WORKERS:-4}
+      - AGIXT_HUB=${AGIXT_HUB:-Josh-XT/AGiXT-Hub}
+      - GITHUB_USER=${GITHUB_USER}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - TOKENIZERS_PARALLELISM=False
+    ports:
+      - "8501:8501"
+      - "7437:7437"
+    volumes:
+      - ./agixt:/agixt:rw
+      - ./streamlit:/streamlit:rw
+      - ./tests:/tests:rw
+      - ./models:/model:rw
+  veryhelpfulai:
+    build: .
+    depends_on:
+      - agixt
+    env_file:
+      - .env.example
+    environment:
+      - APP_NAME=${APP_NAME:-VeryHelpful.AI}
+      - APP_DESCRIPTION=${APP_DESCRIPTION:-One Very Helpful AI.}
+      - AGIXT_URI=${AGIXT_URI:-http://agixt:7437}
+      - AI_PROVIDER_URI=${AI_PROVIDER_URI:-https://api.openai.com/v1}
+      - AI_PROVIDER_KEY=${AI_PROVIDER_KEY}
+      - ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
+      - LEARNING_ENABLED=${LEARNING_ENABLED:-True}
+      - EXTENSIONS_ENABLED=${EXTENSIONS_ENABLED:-True}
+      - CHAINS_ENABLED=${CHAINS_ENABLED:-True}
+    ports:
+      - "11437:11437"
+    volumes:
+      - .:.:rw
