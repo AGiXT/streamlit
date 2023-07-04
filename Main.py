@@ -1,7 +1,5 @@
 import streamlit as st
 from components.docs import agixt_docs
-from streamlit_autorefresh import st_autorefresh
-
 
 st.set_page_config(
     page_title="AGiXT",
@@ -9,10 +7,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-# Run the autorefresh about (5 seconds) and stop running in the corner after the 2nd time
-count = st_autorefresh(interval=5000, limit=2)
-
 
 try:
     with open("./.streamlit/config.toml") as f:
