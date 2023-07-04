@@ -1,5 +1,4 @@
 import streamlit as st
-from components.verify_backend import verify_backend
 from components.docs import agixt_docs
 from streamlit_autorefresh import st_autorefresh
 
@@ -42,7 +41,3 @@ else:
         """,
         unsafe_allow_html=True,
     )
-
-
-if not verify_backend():
-    verify_backend()
