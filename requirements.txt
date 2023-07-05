@@ -1,3 +1,3 @@
 streamlit==1.24.0
-agixtsdk==0.0.7
+agixtsdk==0.0.8
 python-dotenv==1.0.0
