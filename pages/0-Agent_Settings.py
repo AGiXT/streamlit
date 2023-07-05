@@ -33,6 +33,16 @@ def get_extension_settings():
     return ApiClient.get_extension_settings()
 
 
+@st.cache_data
+def get_extensions():
+    extensions = ApiClient.get_extensions()
+    return [
+        command["friendly_name"]
+        for extension in extensions
+        for command in extension["commands"]
+    ]
+
+
 providers = get_providers()
 embedders = get_embed_providers()
 extension_setting_keys = get_extension_settings()
@@ -211,7 +221,11 @@ if agent_name and not new_agent:
 
             st.subheader("Agent Commands")
             # Fetch the available commands using the `Commands` class
-            available_commands = agent_config["commands"]
+            commands = get_extensions()
+            available_commands = ApiClient.get_commands(agent_name=agent_name)
+            for command in commands:
+                if command not in available_commands:
+                    available_commands[command] = False
 
             # Save the existing command state to prevent duplication
             existing_command_states = {
@@ -238,37 +252,34 @@ if agent_name and not new_agent:
     except Exception as e:
         st.error(f"Error loading agent configuration: {str(e)}")
 
-if not new_agent:
+if not new_agent and agent_name:
     # Trigger actions on form submit
     if update_agent_settings_button:
-        if agent_name:
-            try:
-                ApiClient.update_agent_commands(
-                    agent_name=agent_name, commands=available_commands
-                )
-                ApiClient.update_agent_settings(
-                    agent_name=agent_name, settings=agent_settings
-                )
-                st.success(f"Agent '{agent_name}' updated.")
-            except Exception as e:
-                st.error(f"Error updating agent: {str(e)}")
+        try:
+            ApiClient.update_agent_commands(
+                agent_name=agent_name, commands=available_commands
+            )
+            ApiClient.update_agent_settings(
+                agent_name=agent_name, settings=agent_settings
+            )
+            st.success(f"Agent '{agent_name}' updated.")
+        except Exception as e:
+            st.error(f"Error updating agent: {str(e)}")
 
     if wipe_memories_button:
-        if agent_name:
-            try:
-                ApiClient.wipe_agent_memories(agent_name=agent_name)
-                st.success(f"Memories of agent '{agent_name}' wiped.")
-            except Exception as e:
-                st.error(f"Error wiping agent's memories: {str(e)}")
+        try:
+            ApiClient.wipe_agent_memories(agent_name=agent_name)
+            st.success(f"Memories of agent '{agent_name}' wiped.")
+        except Exception as e:
+            st.error(f"Error wiping agent's memories: {str(e)}")
 
     if delete_agent_button:
-        if agent_name:
-            try:
-                ApiClient.delete_agent(agent_name=agent_name)
-                st.success(f"Agent '{agent_name}' deleted.")
-                st.session_state["new_agent_name"] = ""  # Reset the selected agent
-                st.experimental_rerun()  # Rerun the app to update the agent list
-            except Exception as e:
-                st.error(f"Error deleting agent: {str(e)}")
-        else:
-            st.error("Agent name is required.")
+        try:
+            ApiClient.delete_agent(agent_name=agent_name)
+            st.success(f"Agent '{agent_name}' deleted.")
+            st.session_state["new_agent_name"] = ""  # Reset the selected agent
+            st.experimental_rerun()  # Rerun the app to update the agent list
+        except Exception as e:
+            st.error(f"Error deleting agent: {str(e)}")
+    else:
+        st.error("Agent name is required.")
