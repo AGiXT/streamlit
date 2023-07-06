@@ -281,5 +281,5 @@ if not new_agent and agent_name:
             st.experimental_rerun()  # Rerun the app to update the agent list
         except Exception as e:
             st.error(f"Error deleting agent: {str(e)}")
-    else:
-        st.error("Agent name is required.")
+else:
+    st.error("Agent name is required.")
