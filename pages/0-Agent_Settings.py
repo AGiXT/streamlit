@@ -252,7 +252,6 @@ if agent_name and not new_agent:
     except Exception as e:
         st.error(f"Error loading agent configuration: {str(e)}")
 
-if not new_agent and agent_name:
     # Trigger actions on form submit
     if update_agent_settings_button:
         try:

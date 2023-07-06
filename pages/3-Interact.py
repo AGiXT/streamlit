@@ -30,7 +30,12 @@ agent_name = agent_selection() if mode != "Chains" else None
 
 with st.container():
     if agent_name:
-        st.session_state["chat_history"] = get_history(agent_name=agent_name)
+        st.session_state["conversation"] = st.selectbox(
+            "Choose a conversation", ApiClient.get_conversations(agent_name=agent_name)
+        )
+        st.session_state["chat_history"] = get_history(
+            agent_name=agent_name, conversation_name=st.session_state["conversation"]
+        )
 
 
 # If the user selects Prompt, then show the prompt functionality

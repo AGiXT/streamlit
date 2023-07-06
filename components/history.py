@@ -4,15 +4,17 @@ import html
 import re
 
 
-def get_history(agent_name):
+def get_history(agent_name, conversation_name):
     st.markdown("### Agent History")
     st.markdown(
         "The history of the agent's interactions. The latest responses are at the top."
     )
 
     # Add a button to delete agent history
-    if st.button("Delete Agent History"):
-        ApiClient.delete_agent_history(agent_name=agent_name)
+    if st.button("Delete Conversation"):
+        ApiClient.delete_conversation(
+            agent_name=agent_name, conversation_name=conversation_name
+        )
         st.success("Agent history deleted successfully.")
 
     # Define CSS rules for message container
@@ -48,7 +50,12 @@ def get_history(agent_name):
     with st.container():
         message_container = "<div class='message-container'>"
         try:
-            history = ApiClient.get_chat_history(agent_name=agent_name)
+            history = ApiClient.get_conversation(
+                agent_name=agent_name,
+                conversation_name=conversation_name,
+                limit=100,
+                page=1,
+            )
             history = reversed(history)
 
             for item in history:
