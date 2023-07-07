@@ -27,15 +27,17 @@ if "chat_history" not in st.session_state:
 
 agent_name = agent_selection() if mode != "Chains" else None
 
-
-with st.container():
-    if agent_name:
-        st.session_state["conversation"] = st.selectbox(
-            "Choose a conversation", ApiClient.get_conversations(agent_name=agent_name)
-        )
-        st.session_state["chat_history"] = get_history(
-            agent_name=agent_name, conversation_name=st.session_state["conversation"]
-        )
+if mode != "Chains" and mode != "Learning":
+    with st.container():
+        if agent_name:
+            st.session_state["conversation"] = st.selectbox(
+                "Choose a conversation",
+                ApiClient.get_conversations(agent_name=agent_name),
+            )
+            st.session_state["chat_history"] = get_history(
+                agent_name=agent_name,
+                conversation_name=st.session_state["conversation"],
+            )
 
 
 # If the user selects Prompt, then show the prompt functionality
@@ -81,18 +83,22 @@ if mode == "Prompt":
         prompt_args_values["websearch_depth"] = websearch_depth
         prompt_args_values["context_results"] = context_results
         prompt_args_values["shots"] = int(shots)
-        agent_prompt_resp = ApiClient.prompt_agent(
-            agent_name=agent_name,
-            prompt_name=prompt_name,
-            prompt_args=prompt_args_values,
+        prompt_args_values["conversation_name"] = (
+            st.session_state["conversation"]
+            if "conversation" in st.session_state
+            else f"{agent_name} History"
         )
-
-        # Print the response
-        st.write(f"{agent_name}: {agent_prompt_resp}")
+        with st.spinner("Thinking, please wait..."):
+            agent_prompt_resp = ApiClient.prompt_agent(
+                agent_name=agent_name,
+                prompt_name=prompt_name,
+                prompt_args=prompt_args_values,
+            )
+            if agent_prompt_resp:
+                st.experimental_rerun()
 
 if mode == "Chat":
     st.markdown("### Choose an Agent to Chat With")
-    smart_chat_toggle = st.checkbox("Enable Smart Chat")
     shots = st.number_input(
         "Shots (How many times to ask the agent)", min_value=1, value=1, key="shots"
     )
@@ -102,44 +108,41 @@ if mode == "Chat":
     if send_button:
         if agent_name and chat_prompt:
             with st.spinner("Thinking, please wait..."):
-                if smart_chat_toggle:
-                    response = ApiClient.smartchat(
-                        agent_name=agent_name,
-                        prompt=chat_prompt,
-                    )
-                else:
-                    response = ApiClient.prompt_agent(
-                        agent_name=agent_name,
-                        prompt_name="Chat",
-                        prompt_args={
-                            "user_input": chat_prompt,
-                            "shots": int(shots),
-                        },
-                    )
+                response = ApiClient.prompt_agent(
+                    agent_name=agent_name,
+                    prompt_name="Chat",
+                    prompt_args={
+                        "user_input": chat_prompt,
+                        "shots": int(shots),
+                        "conversation_name": st.session_state["conversation"]
+                        if "conversation" in st.session_state
+                        else f"{agent_name} History",
+                    },
+                )
                 if response:
                     st.experimental_rerun()
 
 
 if mode == "Instruct":
     st.markdown("### Choose an Agent to Instruct")
-    smart_instruct_toggle = st.checkbox("Enable Smart Instruct")
     instruct_prompt = st.text_area("Enter your instruction", key="instruct_prompt")
     send_button = st.button("Send Message")
 
     if send_button:
         if agent_name and instruct_prompt:
             with st.spinner("Thinking, please wait..."):
-                if smart_instruct_toggle:
-                    response = ApiClient.smartinstruct(
-                        agent_name=agent_name,
-                        prompt=instruct_prompt,
-                    )
-                else:
-                    response = ApiClient.instruct(
-                        agent_name=agent_name, prompt=instruct_prompt
-                    )
-            if response:
-                st.experimental_rerun()
+                response = ApiClient.prompt_agent(
+                    agent_name=agent_name,
+                    prompt_name="instruct",
+                    prompt_args={
+                        "user_input": instruct_prompt,
+                        "conversation_name": st.session_state["conversation"]
+                        if "conversation" in st.session_state
+                        else f"{agent_name} History",
+                    },
+                )
+                if response:
+                    st.experimental_rerun()
 
 if mode == "Learning":
     if agent_name:
