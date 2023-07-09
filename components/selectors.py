@@ -78,18 +78,18 @@ def chain_selection(prompt: dict = {}, step_number: int = 0):
         "Select Chain",
         [""] + available_chains,
         index=available_chains.index(prompt.get("chain_name", "")) + 1
-        if "chain_name" in prompt
+        if "chain" in prompt
         else 0,
         key=f"step_{step_number}_chain_name",
     )
     user_input = st.text_input(
         "User Input",
-        value=prompt.get("user_input", ""),
+        value=prompt.get("input", ""),
         key=f"user_input_{step_number}",
     )
 
     if chain_name:
-        new_prompt = {"chain_name": chain_name, "user_input": user_input}
+        new_prompt = {"chain": chain_name, "input": user_input}
         return new_prompt
 
 
