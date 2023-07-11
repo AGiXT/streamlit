@@ -90,8 +90,7 @@ if mode == "Prompt":
         shots = 1
         context_results = 5
         disable_memory = False
-    # Add an input field for context_results if 'task' is in prompt_args
-    context_results = 0
+
     if "task" in prompt_args and "context" in prompt_args:
         context_results = st.number_input("Context results", min_value=1, value=5)
 
