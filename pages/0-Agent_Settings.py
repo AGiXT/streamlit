@@ -165,7 +165,13 @@ if agent_name and not new_agent:
             embedders,
             index=embedders.index(embedder_name) if embedder_name in embedders else 0,
         )
-
+        if "WEBSEARCH_TIMEOUT" not in agent_settings:
+            agent_settings["WEBSEARCH_TIMEOUT"] = 0
+        websearch_timeout = st.number_input(
+            "Websearch Timeout in seconds.  Set to 0 to disable the timeout and allow the AI to search until it feels it is done.",
+            value=int(agent_settings["WEBSEARCH_TIMEOUT"]),
+            key="WEBSEARCH_TIMEOUT",
+        )
         # Make a checkbox for autonomous_execution
         if "AUTONOMOUS_EXECUTION" not in agent_settings:
             agent_settings["AUTONOMOUS_EXECUTION"] = False
