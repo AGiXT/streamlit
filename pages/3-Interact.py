@@ -98,18 +98,12 @@ if mode == "Prompt":
     # Button to execute the prompt
     if st.button("Execute"):
         # Call the prompt_agent function
-        if "websearch" not in prompt_args_values:
-            prompt_args_values["websearch"] = websearch
-        if "browse_links" not in prompt_args_values:
-            prompt_args_values["browse_links"] = browse_links
-        if "websearch_depth" not in prompt_args_values:
-            prompt_args_values["websearch_depth"] = websearch_depth
-        if "context_results" not in prompt_args_values:
-            prompt_args_values["context_results"] = context_results
-        if "disable_memory" not in prompt_args_values:
-            prompt_args_values["disable_memory"] = disable_memory
-        if "shots" not in prompt_args_values:
-            prompt_args_values["shots"] = int(shots)
+        prompt_args_values["websearch"] = websearch
+        prompt_args_values["browse_links"] = browse_links
+        prompt_args_values["websearch_depth"] = int(websearch_depth)
+        prompt_args_values["context_results"] = int(context_results)
+        prompt_args_values["disable_memory"] = disable_memory
+        prompt_args_values["shots"] = int(shots)
         prompt_args_values["conversation_name"] = (
             st.session_state["conversation"]
             if "conversation" in st.session_state
