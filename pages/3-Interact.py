@@ -20,7 +20,7 @@ st.header("Interact with Agents")
 prompts = ApiClient.get_prompts()
 
 # Add a dropdown to select a mode
-mode = st.selectbox("Select Mode", ["Chat", "Chains", "Prompt", "Instruct", "Learning"])
+mode = st.selectbox("Select Mode", ["Prompt", "Chains", "Chat", "Instruct", "Learning"])
 
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = ""
@@ -44,7 +44,12 @@ if mode != "Chains" and mode != "Learning":
 if mode == "Prompt":
     st.markdown("### Choose an Agent and Prompt")
     # Add a dropdown to select a prompt
-    prompt_name = st.selectbox("Choose a prompt", prompts)
+    # Get the prompt name, set the default prompt name to "Custom Input"
+    try:
+        custom_input_index = prompts.index("Custom Input")
+    except:
+        custom_input_index = 0
+    prompt_name = st.selectbox("Choose a prompt", prompts, index=custom_input_index)
     # Fetch arguments for the selected prompt
     prompt_args = ApiClient.get_prompt_args(prompt_name=prompt_name)
 
@@ -57,6 +62,7 @@ if mode == "Prompt":
             prompt_args_values[arg] = st.text_area(arg)
 
     # Add a checkbox for websearch option
+    browse_links = st.checkbox("Enable Browsing Links in the user input", value=True)
     websearch = st.checkbox("Enable websearch")
     websearch_depth = (
         3 if websearch else 0
@@ -67,10 +73,23 @@ if mode == "Prompt":
         websearch_depth = st.number_input(
             "Websearch depth", min_value=1, value=3, key="websearch_depth"
         )
-    shots = st.number_input(
-        "Shots (How many times to ask the agent)", min_value=1, value=1, key="shots"
-    )
-
+    advanced_options = st.checkbox("Show Advanced Options")
+    if advanced_options:
+        # Add an input field for shots
+        shots = st.number_input(
+            "Shots (How many times to ask the agent)", min_value=1, value=1, key="shots"
+        )
+        context_results = st.number_input(
+            "How many memories to inject (Default is 5)",
+            min_value=1,
+            value=5,
+            key="context_results",
+        )
+        disable_memory = st.checkbox("Disable Memory", value=False)
+    else:
+        shots = 1
+        context_results = 5
+        disable_memory = False
     # Add an input field for context_results if 'task' is in prompt_args
     context_results = 0
     if "task" in prompt_args and "context" in prompt_args:
@@ -79,10 +98,18 @@ if mode == "Prompt":
     # Button to execute the prompt
     if st.button("Execute"):
         # Call the prompt_agent function
-        prompt_args_values["websearch"] = websearch
-        prompt_args_values["websearch_depth"] = websearch_depth
-        prompt_args_values["context_results"] = context_results
-        prompt_args_values["shots"] = int(shots)
+        if "websearch" not in prompt_args_values:
+            prompt_args_values["websearch"] = websearch
+        if "browse_links" not in prompt_args_values:
+            prompt_args_values["browse_links"] = browse_links
+        if "websearch_depth" not in prompt_args_values:
+            prompt_args_values["websearch_depth"] = websearch_depth
+        if "context_results" not in prompt_args_values:
+            prompt_args_values["context_results"] = context_results
+        if "disable_memory" not in prompt_args_values:
+            prompt_args_values["disable_memory"] = disable_memory
+        if "shots" not in prompt_args_values:
+            prompt_args_values["shots"] = int(shots)
         prompt_args_values["conversation_name"] = (
             st.session_state["conversation"]
             if "conversation" in st.session_state
