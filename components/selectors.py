@@ -35,10 +35,70 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         else 0,
         key=f"step_{step_number}_prompt_name",
     )
+    browse_links = st.checkbox(
+        "Enable Browsing Links in the user input",
+        value=prompt["browse_links"] if "browse_links" in prompt else True,
+        key=f"browse_links_{step_number}",
+    )
+    websearch = st.checkbox(
+        "Enable websearch",
+        value=prompt["websearch"] if "websearch" in prompt else False,
+        key=f"websearch_{step_number}",
+    )
+    websearch_depth = (
+        3 if websearch else 0
+    )  # Default depth is 3 if websearch is enabled
 
+    # Add an input field for websearch depth if websearch is enabled
+    if websearch:
+        websearch_depth = st.number_input(
+            "Websearch depth",
+            min_value=1,
+            value=int(prompt["websearch_depth"]) if "websearch_depth" in prompt else 3,
+            key=f"websearch_depth_{step_number}",
+        )
+    advanced_options = st.checkbox(
+        "Show Advanced Options", value=False, key=f"advanced_options_{step_number}"
+    )
+    if advanced_options:
+        # Add an input field for shots
+        shots = st.number_input(
+            "Shots (How many times to ask the agent)",
+            min_value=1,
+            value=int(prompt["shots"]) if "shots" in prompt else 1,
+            key=f"shots_{step_number}",
+        )
+        context_results = st.number_input(
+            "How many memories to inject (Default is 5)",
+            min_value=1,
+            value=int(prompt["context_results"]) if "context_results" in prompt else 5,
+            key=f"context_results_{step_number}",
+        )
+        disable_memory = st.checkbox(
+            "Disable Memory",
+            value=prompt["disable_memory"] if "disable_memory" in prompt else False,
+            key=f"disable_memory_{step_number}",
+        )
+    else:
+        shots = 1
+        context_results = 5
+        disable_memory = False
+
+    if "user_input" in prompt and "context" in prompt:
+        context_results = st.number_input(
+            "Context results",
+            min_value=1,
+            value=int(prompt["context_results"]) if "context_results" in prompt else 5,
+        )
     if prompt_name:
         prompt_args = ApiClient.get_prompt_args(prompt_name)
         args = build_args(args=prompt_args, prompt=prompt, step_number=step_number)
+        args["websearch"] = websearch
+        args["browse_links"] = browse_links
+        args["websearch_depth"] = int(websearch_depth)
+        args["context_results"] = int(context_results)
+        args["disable_memory"] = disable_memory
+        args["shots"] = int(shots)
         new_prompt = {
             "prompt_name": prompt_name,
             **args,

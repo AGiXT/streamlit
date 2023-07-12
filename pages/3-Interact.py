@@ -91,7 +91,7 @@ if mode == "Prompt":
         context_results = 5
         disable_memory = False
 
-    if "task" in prompt_args and "context" in prompt_args:
+    if "user_input" in prompt_args and "context" in prompt_args:
         context_results = st.number_input("Context results", min_value=1, value=5)
 
     # Button to execute the prompt
@@ -173,10 +173,7 @@ if mode == "Chains":
     chain_names = ApiClient.get_chains()
     chain_action = "Run Chain"
     chain_name = st.selectbox("Chains", chain_names)
-    from_step = st.number_input("Start from Step", min_value=1, value=1)
-    all_responses = st.checkbox(
-        "Show All Responses (If not checked, you will only be shown the last step's response in the chain when done.)"
-    )
+    # Run single step check box
     user_input = st.text_area("User Input")
     # Need a checkbox for agent override
     agent_override = st.checkbox("Override Agent")
@@ -184,17 +181,39 @@ if mode == "Chains":
         agent_name = agent_selection()
     else:
         agent_name = ""
-    if st.button("Run Chain"):
-        if chain_name:
-            if chain_action == "Run Chain":
-                responses = ApiClient.run_chain(
-                    chain_name=chain_name,
-                    user_input=user_input,
-                    agent_name=agent_name,
-                    all_responses=all_responses,
-                    from_step=from_step,
-                )
-                st.success(f"Chain '{chain_name}' executed.")
-                st.write(responses)
-        else:
-            st.error("Chain name is required.")
+    single_step = st.checkbox("Run a Single Step")
+    if single_step:
+        from_step = st.number_input("Step Number to Run", min_value=1, value=1)
+        all_responses = False
+        if st.button("Run Chain Step"):
+            if chain_name:
+                if chain_action == "Run Chain":
+                    responses = ApiClient.run_chain_step(
+                        chain_name=chain_name,
+                        user_input=user_input,
+                        agent_name=agent_name,
+                        step_number=from_step,
+                    )
+                    st.success(f"Chain '{chain_name}' executed.")
+                    st.write(responses)
+            else:
+                st.error("Chain name is required.")
+    else:
+        from_step = st.number_input("Start from Step", min_value=1, value=1)
+        all_responses = st.checkbox(
+            "Show All Responses (If not checked, you will only be shown the last step's response in the chain when done.)"
+        )
+        if st.button("Run Chain"):
+            if chain_name:
+                if chain_action == "Run Chain":
+                    responses = ApiClient.run_chain(
+                        chain_name=chain_name,
+                        user_input=user_input,
+                        agent_name=agent_name,
+                        all_responses=all_responses,
+                        from_step=from_step,
+                    )
+                    st.success(f"Chain '{chain_name}' executed.")
+                    st.write(responses)
+            else:
+                st.error("Chain name is required.")
