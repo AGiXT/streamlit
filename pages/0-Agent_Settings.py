@@ -80,6 +80,25 @@ def render_provider_settings(agent_settings, provider_name: str):
     return rendered_settings
 
 
+def render_extension_settings(extension_settings, agent_settings):
+    rendered_settings = {}
+
+    for extension, settings in extension_settings.items():
+        st.subheader(f"{extension}")
+        for key, val in settings.items():
+            if key in agent_settings:
+                default_value = agent_settings[key]
+            else:
+                default_value = val if val else ""
+
+            user_val = st.text_input(key, value=default_value, key=f"{extension}_{key}")
+
+            # Check if the user value exists before saving the setting
+            if user_val:
+                rendered_settings[key] = user_val
+    return rendered_settings
+
+
 st.header("Agent Settings")
 agent_name = agent_selection()
 
@@ -150,74 +169,52 @@ if agent_name and not new_agent:
         agent_settings[
             "provider"
         ] = provider_name  # Update the agent_settings with the selected provider
-        if "agent_helper_name" in agent_settings:
-            agent_helper_name = agent_settings["helper_agent_name"]
-        else:
-            agent_helper_name = agent_name
-        agent_settings["helper_agent_name"] = helper_agent_selection(
-            current_agent=agent_name,
-            key="select_helper_agent",
-            heading="Select Helper Agent (Your agent will ask this one for help when it needs something.)",
-        )
-        embedder_name = agent_settings.get("embedder", "")
-        embedder_name = st.selectbox(
-            "Select Embedder",
-            embedders,
-            index=embedders.index(embedder_name) if embedder_name in embedders else 0,
-        )
-        if "WEBSEARCH_TIMEOUT" not in agent_settings:
-            agent_settings["WEBSEARCH_TIMEOUT"] = 0
-        websearch_timeout = st.number_input(
-            "Websearch Timeout in seconds.  Set to 0 to disable the timeout and allow the AI to search until it feels it is done.",
-            value=int(agent_settings["WEBSEARCH_TIMEOUT"]),
-            key="WEBSEARCH_TIMEOUT",
-        )
-        # Make a checkbox for autonomous_execution
-        if "AUTONOMOUS_EXECUTION" not in agent_settings:
-            agent_settings["AUTONOMOUS_EXECUTION"] = False
-        autonomous_execution = st.checkbox(
-            "Autonomous Execution (If checked, agent will run any enabled commands automatically, if not, it will create a chain of commands it would have executed.)",
-            value=bool(agent_settings["AUTONOMOUS_EXECUTION"]),
-            key="AUTONOMOUS_EXECUTION",
-        )
-        agent_settings["AUTONOMOUS_EXECUTION"] = autonomous_execution
-        agent_settings[
-            "embedder"
-        ] = embedder_name  # Update the agent_settings with the selected embedder
-
-        if provider_name:
-            provider_settings = render_provider_settings(agent_settings, provider_name)
-            agent_settings.update(provider_settings)
-
-        def render_extension_settings(extension_settings, agent_settings):
-            rendered_settings = {}
-
-            for extension, settings in extension_settings.items():
-                st.subheader(f"{extension}")
-                for key, val in settings.items():
-                    if key in agent_settings:
-                        default_value = agent_settings[key]
-                    else:
-                        default_value = val if val else ""
-
-                    user_val = st.text_input(
-                        key, value=default_value, key=f"{extension}_{key}"
-                    )
-
-                    # Check if the user value exists before saving the setting
-                    if user_val:
-                        rendered_settings[key] = user_val
-
-            return rendered_settings
 
         with st.form(key="update_agent_settings_form"):
-            update_agent_settings_button = st.form_submit_button(
-                "Update Agent Settings"
+            if "agent_helper_name" in agent_settings:
+                agent_helper_name = agent_settings["helper_agent_name"]
+            else:
+                agent_helper_name = agent_name
+            agent_settings["helper_agent_name"] = helper_agent_selection(
+                current_agent=agent_name,
+                key="select_helper_agent",
+                heading="Select Helper Agent (Your agent will ask this one for help when it needs something.)",
             )
-            wipe_memories_button = st.form_submit_button("Wipe Agent Memories")
-            delete_agent_button = st.form_submit_button("Delete Agent")
-        st.subheader("Extension Settings")
-        with st.form("extension_settings"):
+            embedder_name = agent_settings.get("embedder", "")
+            embedder_name = st.selectbox(
+                "Select Embedder",
+                embedders,
+                index=embedders.index(embedder_name)
+                if embedder_name in embedders
+                else 0,
+            )
+            if "WEBSEARCH_TIMEOUT" not in agent_settings:
+                agent_settings["WEBSEARCH_TIMEOUT"] = 0
+            websearch_timeout = st.number_input(
+                "Websearch Timeout in seconds.  Set to 0 to disable the timeout and allow the AI to search until it feels it is done.",
+                value=int(agent_settings["WEBSEARCH_TIMEOUT"]),
+                key="WEBSEARCH_TIMEOUT",
+            )
+            # Make a checkbox for autonomous_execution
+            if "AUTONOMOUS_EXECUTION" not in agent_settings:
+                agent_settings["AUTONOMOUS_EXECUTION"] = False
+            autonomous_execution = st.checkbox(
+                "Autonomous Execution (If checked, agent will run any enabled commands automatically, if not, it will create a chain of commands it would have executed.)",
+                value=bool(agent_settings["AUTONOMOUS_EXECUTION"]),
+                key="AUTONOMOUS_EXECUTION",
+            )
+            agent_settings["AUTONOMOUS_EXECUTION"] = autonomous_execution
+            agent_settings[
+                "embedder"
+            ] = embedder_name  # Update the agent_settings with the selected embedder
+
+            if provider_name:
+                provider_settings = render_provider_settings(
+                    agent_settings, provider_name
+                )
+                agent_settings.update(provider_settings)
+
+            st.subheader("Extension Settings")
             extension_settings = render_extension_settings(
                 extension_setting_keys, agent_settings
             )
@@ -251,40 +248,37 @@ if agent_name and not new_agent:
                         key=command_name,
                     )
                     available_commands[command_name] = toggle_status
-            if st.form_submit_button("Update Agent Commands"):
-                ApiClient.update_agent_commands(
-                    agent_name=agent_name, commands=available_commands
-                )
+
+            if st.form_submit_button("Update Agent Settings"):
+                try:
+                    ApiClient.update_agent_commands(
+                        agent_name=agent_name, commands=available_commands
+                    )
+                    ApiClient.update_agent_settings(
+                        agent_name=agent_name, settings=agent_settings
+                    )
+                    st.success(f"Agent '{agent_name}' updated.")
+                except Exception as e:
+                    st.error(f"Error updating agent: {str(e)}")
+            if st.form_submit_button("Wipe Agent Memories"):
+                try:
+                    ApiClient.wipe_agent_memories(agent_name=agent_name)
+                    st.success(f"Memories of agent '{agent_name}' wiped.")
+                except Exception as e:
+                    st.error(f"Error wiping agent's memories: {str(e)}")
+
+            if st.form_submit_button("Delete Agent"):
+                try:
+                    ApiClient.delete_agent(agent_name=agent_name)
+                    st.success(f"Agent '{agent_name}' deleted.")
+                    st.session_state["new_agent_name"] = ""  # Reset the selected agent
+                    st.experimental_rerun()  # Rerun the app to update the agent list
+                except Exception as e:
+                    st.error(f"Error deleting agent: {str(e)}")
     except Exception as e:
         st.error(f"Error loading agent configuration: {str(e)}")
 
     # Trigger actions on form submit
-    if update_agent_settings_button:
-        try:
-            ApiClient.update_agent_commands(
-                agent_name=agent_name, commands=available_commands
-            )
-            ApiClient.update_agent_settings(
-                agent_name=agent_name, settings=agent_settings
-            )
-            st.success(f"Agent '{agent_name}' updated.")
-        except Exception as e:
-            st.error(f"Error updating agent: {str(e)}")
 
-    if wipe_memories_button:
-        try:
-            ApiClient.wipe_agent_memories(agent_name=agent_name)
-            st.success(f"Memories of agent '{agent_name}' wiped.")
-        except Exception as e:
-            st.error(f"Error wiping agent's memories: {str(e)}")
-
-    if delete_agent_button:
-        try:
-            ApiClient.delete_agent(agent_name=agent_name)
-            st.success(f"Agent '{agent_name}' deleted.")
-            st.session_state["new_agent_name"] = ""  # Reset the selected agent
-            st.experimental_rerun()  # Rerun the app to update the agent list
-        except Exception as e:
-            st.error(f"Error deleting agent: {str(e)}")
 else:
     st.error("Agent name is required.")
