@@ -1,5 +1,5 @@
 import streamlit as st
-from components.selectors import agent_selection
+from components.selectors import agent_selection, skip_args
 from ApiClient import ApiClient
 from components.learning import learning_page
 from components.history import get_history
@@ -56,7 +56,6 @@ if mode == "Prompt":
     # Add input fields for prompt arguments
     st.markdown("### Prompt Variables")
     prompt_args_values = {}
-    skip_args = ["command_list", "context", "COMMANDS", "date", "conversation_history"]
     for arg in prompt_args:
         if arg not in skip_args:
             prompt_args_values[arg] = st.text_area(arg)
@@ -175,6 +174,8 @@ if mode == "Chains":
     chain_name = st.selectbox("Chains", chain_names)
     # Run single step check box
     user_input = st.text_area("User Input")
+    # Add a checkbox to override any other inputs on the selected chain
+
     # Need a checkbox for agent override
     agent_override = st.checkbox("Override Agent")
     if agent_override:

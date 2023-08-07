@@ -14,16 +14,23 @@ def cached_get_prompts():
     return ApiClient.get_prompts()
 
 
+skip_args = [
+    "command_list",
+    "context",
+    "COMMANDS",
+    "date",
+    "conversation_history",
+    "agent_name",
+    "working_directory",
+    "helper_agent_name",
+]
+
+
 def build_args(args: dict = {}, prompt: dict = {}, step_number: int = 0):
     return {
         arg: st.text_input(arg, value=prompt.get(arg, ""), key=f"{arg}_{step_number}")
         for arg in args
-        if arg != "context"
-        and arg != "command_list"
-        and arg != "COMMANDS"
-        and arg != "user_input"
-        and arg != "date"
-        and arg != "conversation_history"
+        if arg not in skip_args
     }
 
 
