@@ -22,6 +22,8 @@ def build_args(args: dict = {}, prompt: dict = {}, step_number: int = 0):
         and arg != "command_list"
         and arg != "COMMANDS"
         and arg != "user_input"
+        and arg != "date"
+        and arg != "conversation_history"
     }
 
 

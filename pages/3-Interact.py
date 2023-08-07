@@ -56,13 +56,13 @@ if mode == "Prompt":
     # Add input fields for prompt arguments
     st.markdown("### Prompt Variables")
     prompt_args_values = {}
-    skip_args = ["command_list", "context", "COMMANDS", "date"]
+    skip_args = ["command_list", "context", "COMMANDS", "date", "conversation_history"]
     for arg in prompt_args:
         if arg not in skip_args:
             prompt_args_values[arg] = st.text_area(arg)
 
     # Add a checkbox for websearch option
-    browse_links = st.checkbox("Enable Browsing Links in the user input", value=True)
+    browse_links = st.checkbox("Enable Browsing Links in the user input", value=False)
     websearch = st.checkbox("Enable websearch")
     websearch_depth = (
         3 if websearch else 0
