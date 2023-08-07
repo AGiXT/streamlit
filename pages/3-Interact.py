@@ -171,17 +171,30 @@ if mode == "Chains":
     st.markdown("### Chain to Run")
     chain_names = ApiClient.get_chains()
     chain_action = "Run Chain"
-    chain_name = st.selectbox("Chains", chain_names)
-    # Run single step check box
-    user_input = st.text_area("User Input")
-    # Add a checkbox to override any other inputs on the selected chain
-
-    # Need a checkbox for agent override
     agent_override = st.checkbox("Override Agent")
     if agent_override:
         agent_name = agent_selection()
     else:
         agent_name = ""
+    chain_name = st.selectbox("Chains", chain_names)
+
+    # Run single step check box
+    user_input = st.text_area("User Input")
+    args = {}
+    if chain_name:
+        chain_args = ApiClient.get_chain_args(chain_name=chain_name)
+        for arg in chain_args:
+            if arg not in skip_args and arg != "user_input":
+                # Add a checkbox to override the arg
+                override_arg = st.checkbox(f"Override `{arg}` argument.")
+                if override_arg:
+                    args[arg] = st.text_area(arg)
+    if args != {}:
+        args_copy = args.copy()
+        for arg in args_copy:
+            if args[arg] == "":
+                del args[arg]
+
     single_step = st.checkbox("Run a Single Step")
     if single_step:
         from_step = st.number_input("Step Number to Run", min_value=1, value=1)
@@ -194,6 +207,7 @@ if mode == "Chains":
                         user_input=user_input,
                         agent_name=agent_name,
                         step_number=from_step,
+                        chain_args=args,
                     )
                     st.success(f"Chain '{chain_name}' executed.")
                     st.write(responses)
@@ -213,6 +227,7 @@ if mode == "Chains":
                         agent_name=agent_name,
                         all_responses=all_responses,
                         from_step=from_step,
+                        chain_args=args,
                     )
                     st.success(f"Chain '{chain_name}' executed.")
                     st.write(responses)
