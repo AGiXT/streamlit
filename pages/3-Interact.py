@@ -1,4 +1,5 @@
 import streamlit as st
+import uuid
 from components.selectors import agent_selection, skip_args
 from ApiClient import ApiClient
 from components.learning import learning_page
@@ -27,7 +28,7 @@ if "chat_history" not in st.session_state:
 
 agent_name = agent_selection() if mode != "Chains" else None
 
-if mode != "Chains" and mode != "Learning":
+if mode != "Learning":
     with st.container():
         if agent_name:
             st.session_state["conversation"] = st.selectbox(
@@ -38,7 +39,13 @@ if mode != "Chains" and mode != "Learning":
                 agent_name=agent_name,
                 conversation_name=st.session_state["conversation"],
             )
-
+        if "conversation" not in st.session_state:
+            st.session_state["conversation"] = uuid.uuid4()
+        st.session_state["conversation"] = (
+            st.session_state["conversation"]
+            if st.session_state["conversation"] != ""
+            else uuid.uuid4()
+        )
 
 # If the user selects Prompt, then show the prompt functionality
 if mode == "Prompt":
@@ -102,11 +109,7 @@ if mode == "Prompt":
         prompt_args_values["context_results"] = int(context_results)
         prompt_args_values["disable_memory"] = disable_memory
         prompt_args_values["shots"] = int(shots)
-        prompt_args_values["conversation_name"] = (
-            st.session_state["conversation"]
-            if "conversation" in st.session_state
-            else f"{agent_name} History"
-        )
+        prompt_args_values["conversation_name"] = st.session_state["conversation"]
         with st.spinner("Thinking, please wait..."):
             agent_prompt_resp = ApiClient.prompt_agent(
                 agent_name=agent_name,
@@ -133,9 +136,7 @@ if mode == "Chat":
                     prompt_args={
                         "user_input": chat_prompt,
                         "shots": int(shots),
-                        "conversation_name": st.session_state["conversation"]
-                        if "conversation" in st.session_state
-                        else f"{agent_name} History",
+                        "conversation_name": st.session_state["conversation"],
                     },
                 )
                 if response:
@@ -155,9 +156,7 @@ if mode == "Instruct":
                     prompt_name="instruct",
                     prompt_args={
                         "user_input": instruct_prompt,
-                        "conversation_name": st.session_state["conversation"]
-                        if "conversation" in st.session_state
-                        else f"{agent_name} History",
+                        "conversation_name": st.session_state["conversation"],
                     },
                 )
                 if response:
@@ -194,7 +193,7 @@ if mode == "Chains":
         for arg in args_copy:
             if args[arg] == "":
                 del args[arg]
-
+    args["conversation_name"] = st.session_state["conversation"]
     single_step = st.checkbox("Run a Single Step")
     if single_step:
         from_step = st.number_input("Step Number to Run", min_value=1, value=1)
