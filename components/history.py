@@ -10,13 +10,6 @@ def get_history(agent_name, conversation_name):
         "The history of the agent's interactions. The latest responses are at the top."
     )
 
-    # Add a button to delete agent history
-    if st.button("Delete Conversation"):
-        ApiClient.delete_conversation(
-            agent_name=agent_name, conversation_name=conversation_name
-        )
-        st.success("Agent history deleted successfully.")
-
     # Define CSS rules for message container
     message_container_css = """
         <style>

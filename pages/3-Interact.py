@@ -35,10 +35,20 @@ if mode != "Learning":
                 "Choose a conversation",
                 ApiClient.get_conversations(agent_name=agent_name),
             )
+            if st.session_state["conversation"] == "":
+                st.session_state["conversation"] = uuid.uuid4()
+            if st.button("Delete Conversation"):
+                ApiClient.delete_conversation(
+                    agent_name=agent_name,
+                    conversation_name=st.session_state["conversation"],
+                )
+                st.success("Agent history deleted successfully.")
             st.session_state["chat_history"] = get_history(
                 agent_name=agent_name,
                 conversation_name=st.session_state["conversation"],
             )
+            # Add a button to delete agent history
+
         if "conversation" not in st.session_state:
             st.session_state["conversation"] = uuid.uuid4()
         st.session_state["conversation"] = (
@@ -49,7 +59,7 @@ if mode != "Learning":
 
 # If the user selects Prompt, then show the prompt functionality
 if mode == "Prompt":
-    st.markdown("### Choose an Agent and Prompt")
+    st.markdown("### Choose a Prompt")
     # Add a dropdown to select a prompt
     # Get the prompt name, set the default prompt name to "Custom Input"
     try:
@@ -120,27 +130,59 @@ if mode == "Prompt":
                 st.experimental_rerun()
 
 if mode == "Chat":
-    st.markdown("### Choose an Agent to Chat With")
-    shots = st.number_input(
-        "Shots (How many times to ask the agent)", min_value=1, value=1, key="shots"
-    )
-    chat_prompt = st.text_area("Enter your message", key="chat_prompt")
-    send_button = st.button("Send Message")
+    user_input = st.text_area("User Input")
+    # Add a checkbox for websearch option
 
-    if send_button:
-        if agent_name and chat_prompt:
-            with st.spinner("Thinking, please wait..."):
-                response = ApiClient.prompt_agent(
-                    agent_name=agent_name,
-                    prompt_name="Chat",
-                    prompt_args={
-                        "user_input": chat_prompt,
-                        "shots": int(shots),
-                        "conversation_name": st.session_state["conversation"],
-                    },
-                )
-                if response:
-                    st.experimental_rerun()
+    advanced_options = st.checkbox("Show Advanced Options")
+    if advanced_options:
+        # Add an input field for shots
+        shots = st.number_input(
+            "Shots (How many times to ask the agent)", min_value=1, value=1, key="shots"
+        )
+        context_results = st.number_input(
+            "How many long term memories to inject (Default is 5)",
+            min_value=1,
+            value=5,
+            key="context_results",
+        )
+        browse_links = st.checkbox(
+            "Enable Browsing Links in the user input", value=False
+        )
+        websearch = st.checkbox("Enable websearch")
+        websearch_depth = (
+            3 if websearch else 0
+        )  # Default depth is 3 if websearch is enabled
+    else:
+        shots = 1
+        context_results = 5
+        browse_links = False
+        websearch = False
+        websearch_depth = 0
+
+    if websearch:
+        websearch_depth = st.number_input(
+            "Websearch depth", min_value=1, value=3, key="websearch_depth"
+        )
+    # Button to execute the prompt
+    if st.button("Send"):
+        # Call the prompt_agent function
+        with st.spinner("Thinking, please wait..."):
+            agent_prompt_resp = ApiClient.prompt_agent(
+                agent_name=agent_name,
+                prompt_name="Chat",
+                prompt_args={
+                    "user_input": user_input,
+                    "websearch": websearch,
+                    "browse_links": browse_links,
+                    "websearch_depth": int(websearch_depth),
+                    "context_results": int(context_results),
+                    "shots": int(shots),
+                    "conversation_name": st.session_state["conversation"],
+                    "disable_memory": True,
+                },
+            )
+            if agent_prompt_resp:
+                st.experimental_rerun()
 
 
 if mode == "Instruct":
