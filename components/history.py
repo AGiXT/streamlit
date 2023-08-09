@@ -5,17 +5,12 @@ import re
 
 
 def get_history(agent_name, conversation_name):
-    st.markdown("### Agent History")
-    st.markdown(
-        "The history of the agent's interactions. The latest responses are at the top."
-    )
-
-    # Define CSS rules for message container
     message_container_css = """
         <style>
         .message-container {
-            height: 400px;
+            height: calc(100vh - 500px);
             overflow: auto;
+            overflow-y: scroll;
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 10px;
@@ -49,19 +44,14 @@ def get_history(agent_name, conversation_name):
                 limit=100,
                 page=1,
             )
-            history = reversed(history)
-
+            history.reverse()
             for item in history:
                 item["message"] = html.escape(item["message"])
                 item["message"] = item["message"].replace(r"\n", "<br>")
-
-                # Check if the message is a code block
                 code_block_match = re.search(r"```(.*)```", item["message"], re.DOTALL)
 
                 if code_block_match:
-                    # Extract the code block from the match object
                     code_message = code_block_match.group(1)
-                    # Replace the code block in the original message with the code block wrapped in <pre><code> tags
                     item["message"] = re.sub(
                         r"```.*```",
                         f"<pre><code>{code_message}</code></pre>",
