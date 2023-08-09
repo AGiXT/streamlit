@@ -44,32 +44,36 @@ def get_history(agent_name, conversation_name):
                 limit=100,
                 page=1,
             )
-            history.reverse()
-            for item in history:
-                item["message"] = html.escape(item["message"])
-                item["message"] = item["message"].replace(r"\n", "<br>")
-                code_block_match = re.search(r"```(.*)```", item["message"], re.DOTALL)
-
-                if code_block_match:
-                    code_message = code_block_match.group(1)
-                    item["message"] = re.sub(
-                        r"```.*```",
-                        f"<pre><code>{code_message}</code></pre>",
-                        item["message"],
-                        flags=re.DOTALL,
+            if isinstance(history, str):
+                st.write(history)
+            else:
+                history.reverse()
+                for item in history:
+                    item["message"] = html.escape(item["message"])
+                    item["message"] = item["message"].replace(r"\n", "<br>")
+                    code_block_match = re.search(
+                        r"```(.*)```", item["message"], re.DOTALL
                     )
 
-                message = f"{item['timestamp']}<br><b>{item['role']}:</b><br>{item['message']}"
+                    if code_block_match:
+                        code_message = code_block_match.group(1)
+                        item["message"] = re.sub(
+                            r"```.*```",
+                            f"<pre><code>{code_message}</code></pre>",
+                            item["message"],
+                            flags=re.DOTALL,
+                        )
 
-                if agent_name in item["role"]:
-                    message_container += (
-                        f"<div class='message agent-message'>{message}</div>"
-                    )
-                else:
-                    message_container += (
-                        f"<div class='message user-message'>{message}</div>"
-                    )
+                    message = f"{item['timestamp']}<br><b>{item['role']}:</b><br>{item['message']}"
 
+                    if agent_name in item["role"]:
+                        message_container += (
+                            f"<div class='message agent-message'>{message}</div>"
+                        )
+                    else:
+                        message_container += (
+                            f"<div class='message user-message'>{message}</div>"
+                        )
         except Exception as e:
             print(e)
         message_container += "</div>"
