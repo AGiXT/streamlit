@@ -31,9 +31,19 @@ agent_name = agent_selection() if mode != "Chains" else None
 if mode != "Learning":
     with st.container():
         if agent_name:
+            conversations = ApiClient.get_conversations(agent_name=agent_name)
+            if "conversation" not in st.session_state:
+                st.session_state["conversation"] = ""
+            conversation_index = 1 if len(conversations) > 0 else 0
+            default_index = (
+                conversation_index if st.session_state["conversation"] != "" else None
+            )
             st.session_state["conversation"] = st.selectbox(
                 "Choose a conversation",
-                ApiClient.get_conversations(agent_name=agent_name),
+                [""] + conversations,
+                index=conversations.index(st.session_state["conversation"]) + 1
+                if default_index != 0
+                else default_index,
             )
             if st.session_state["conversation"] == "":
                 st.session_state["conversation"] = uuid.uuid4()
