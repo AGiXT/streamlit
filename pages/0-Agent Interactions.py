@@ -14,9 +14,11 @@ agixt_docs()
 
 st.header("Agent Interactions")
 
-with open(os.path.join("session.txt"), "r") as f:
-    agent_name = f.read().strip()
-
+try:
+    with open(os.path.join("session.txt"), "r") as f:
+        agent_name = f.read().strip()
+except:
+    agent_name = "OpenAI"
 st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
 mode = st.selectbox("Select Mode", ["Chat", "Chains", "Prompt", "Instruct"])
 agent_name = agent_selection() if mode != "Chains" else None
