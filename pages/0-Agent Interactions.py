@@ -6,46 +6,21 @@ from components.history import get_history
 from components.docs import agixt_docs
 
 st.set_page_config(
-    page_title="Interact with Agents",
+    page_title="Agent Interactions",
     page_icon=":speech_balloon:",
     layout="wide",
 )
 
 agixt_docs()
 
-st.header("Interact with Agents")
-# Create an instance of the API Client
-
-# Fetch available prompts
+st.header("Agent Interactions")
 prompts = ApiClient.get_prompts()
+mode = st.selectbox("Select Mode", ["Chat", "Chains", "Prompt", "Instruct"])
 
-# Add a dropdown to select a mode
-mode = st.selectbox("Select Mode", ["Prompt", "Chains", "Chat", "Instruct", "Learning"])
-
-if "chat_history" not in st.session_state:
-    st.session_state["chat_history"] = ""
 
 agent_name = agent_selection() if mode != "Chains" else None
+st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
 
-if mode != "Learning":
-    with st.container():
-        conversations = ApiClient.get_conversations(
-            agent_name=agent_name if agent_name else "gpt4free"
-        )
-        st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
-        if st.button("Delete Conversation"):
-            ApiClient.delete_conversation(
-                agent_name=agent_name,
-                conversation_name=st.session_state["conversation"],
-            )
-            st.success("Conversation history deleted successfully.")
-            st.experimental_rerun()
-        st.session_state["chat_history"] = get_history(
-            agent_name=agent_name,
-            conversation_name=st.session_state["conversation"],
-        )
-
-# If the user selects Prompt, then show the prompt functionality
 if mode == "Prompt":
     st.markdown("### Choose a Prompt")
     # Add a dropdown to select a prompt
@@ -99,7 +74,7 @@ if mode == "Prompt":
         context_results = st.number_input("Context results", min_value=1, value=5)
 
     # Button to execute the prompt
-    if st.button("Execute"):
+    if st.button("Send"):
         # Call the prompt_agent function
         prompt_args_values["websearch"] = websearch
         prompt_args_values["browse_links"] = browse_links
@@ -117,7 +92,7 @@ if mode == "Prompt":
             if agent_prompt_resp:
                 st.experimental_rerun()
 
-if mode == "Chat":
+if mode == "Chat" or mode == "Instruct":
     user_input = st.text_area("User Input")
     # Add a checkbox for websearch option
 
@@ -157,7 +132,7 @@ if mode == "Chat":
         with st.spinner("Thinking, please wait..."):
             agent_prompt_resp = ApiClient.prompt_agent(
                 agent_name=agent_name,
-                prompt_name="Chat",
+                prompt_name="Chat" if mode != "Instruct" else "instruct",
                 prompt_args={
                     "user_input": user_input,
                     "websearch": websearch,
@@ -171,30 +146,6 @@ if mode == "Chat":
             )
             if agent_prompt_resp:
                 st.experimental_rerun()
-
-
-if mode == "Instruct":
-    st.markdown("### Choose an Agent to Instruct")
-    instruct_prompt = st.text_area("Enter your instruction", key="instruct_prompt")
-    send_button = st.button("Send Message")
-
-    if send_button:
-        if agent_name and instruct_prompt:
-            with st.spinner("Thinking, please wait..."):
-                response = ApiClient.prompt_agent(
-                    agent_name=agent_name,
-                    prompt_name="instruct",
-                    prompt_args={
-                        "user_input": instruct_prompt,
-                        "conversation_name": st.session_state["conversation"],
-                    },
-                )
-                if response:
-                    st.experimental_rerun()
-
-if mode == "Learning":
-    if agent_name:
-        learning_page(agent_name)
 
 if mode == "Chains":
     st.markdown("### Chain to Run")

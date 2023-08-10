@@ -6,7 +6,7 @@ from components.selectors import agent_selection, helper_agent_selection
 from components.docs import agixt_docs
 
 st.set_page_config(
-    page_title="Agent Settings",
+    page_title="Agent Management",
     page_icon=":hammer_and_wrench:",
     layout="wide",
 )
@@ -99,7 +99,7 @@ def render_extension_settings(extension_settings, agent_settings):
     return rendered_settings
 
 
-st.header("Agent Settings")
+st.header("Agent Management")
 agent_name = agent_selection()
 
 if "new_agent_name" not in st.session_state:

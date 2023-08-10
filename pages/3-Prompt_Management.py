@@ -4,13 +4,13 @@ from components.docs import agixt_docs
 
 
 st.set_page_config(
-    page_title="Prompt Templates",
+    page_title="Prompt Management",
     page_icon=":scroll:",
     layout="wide",
 )
 agixt_docs()
 
-st.header("Prompt Templates")
+st.header("Prompt Management")
 
 prompt_list = ApiClient.get_prompts()
 
