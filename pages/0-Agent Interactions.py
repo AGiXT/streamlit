@@ -153,15 +153,14 @@ if mode == "Chat" or mode == "Instruct":
                 st.experimental_rerun()
 
 if mode == "Chains":
-    st.markdown("### Chain to Run")
     chain_names = ApiClient.get_chains()
     chain_action = "Run Chain"
+    chain_name = st.selectbox("Select a Chain to Run", chain_names)
     agent_override = st.checkbox("Override Agent")
     if agent_override:
         agent_name = agent_selection()
     else:
         agent_name = ""
-    chain_name = st.selectbox("Chains", chain_names)
 
     # Run single step check box
     user_input = st.text_area("User Input")
