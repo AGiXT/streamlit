@@ -227,9 +227,9 @@ def conversation_selection(agent_name):
             conversation = f.read().strip()
     except FileNotFoundError:
         conversation = ""
-    conversations = ApiClient.get_conversations(agent_name=agent_name)
-    if isinstance(conversations, str):
-        conversations = [conversations]
+    conversations = ApiClient.get_conversations(
+        agent_name=agent_name if agent_name else "OpenAI"
+    )
     conversation_name = st.selectbox(
         "Choose a conversation",
         [""] + conversations,
