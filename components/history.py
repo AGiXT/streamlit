@@ -8,7 +8,8 @@ def get_history(agent_name, conversation_name):
     message_container_css = """
         <style>
         .message-container {
-            height: calc(100vh - 500px);
+            min-height: 200px;
+            height: calc(100vh - 900px);
             overflow: auto;
             overflow-y: scroll;
             border: 1px solid #ddd;

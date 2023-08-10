@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from components.selectors import agent_selection, conversation_selection, skip_args
 from ApiClient import ApiClient
 from components.learning import learning_page
@@ -14,12 +15,16 @@ st.set_page_config(
 agixt_docs()
 
 st.header("Agent Interactions")
-prompts = ApiClient.get_prompts()
-mode = st.selectbox("Select Mode", ["Chat", "Chains", "Prompt", "Instruct"])
 
+with open(os.path.join("session.txt"), "r") as f:
+    agent_name = f.read().strip()
 
-agent_name = agent_selection() if mode != "Chains" else None
 st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
+mode = st.selectbox("Select Mode", ["Chat", "Chains", "Prompt", "Instruct"])
+agent_name = agent_selection() if mode != "Chains" else None
+
+prompts = ApiClient.get_prompts()
+
 
 if mode == "Prompt":
     st.markdown("### Choose a Prompt")
