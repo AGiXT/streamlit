@@ -1,5 +1,4 @@
 import streamlit as st
-import uuid
 from components.selectors import agent_selection, conversation_selection, skip_args
 from ApiClient import ApiClient
 from components.learning import learning_page
@@ -30,8 +29,10 @@ agent_name = agent_selection() if mode != "Chains" else None
 
 if mode != "Learning":
     with st.container():
-        conversations = ApiClient.get_conversations(agent_name=agent_name)
-        st.session_state["conversation"] = conversation_selection()
+        conversations = ApiClient.get_conversations(
+            agent_name=agent_name if agent_name else "gpt4free"
+        )
+        st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
         if st.button("Delete Conversation"):
             ApiClient.delete_conversation(
                 agent_name=agent_name,
