@@ -216,3 +216,32 @@ def helper_agent_selection(
         key=key,
     )
     return selected_agent
+
+
+def conversation_selection():
+    if not os.path.exists("conversation.txt"):
+        with open("conversation.txt", "w") as f:
+            f.write("")
+    try:
+        with open(os.path.join("conversation.txt"), "r") as f:
+            conversation = f.read().strip()
+    except FileNotFoundError:
+        conversation = ""
+    conversations = ApiClient.get_conversations(agent_name="")
+    conversation_index = 1 if len(conversations) > 0 else 0
+    default_index = conversation_index if conversation != "" else None
+    conversation_name = st.selectbox(
+        "Choose a conversation",
+        [""] + conversations,
+        index=conversations.index(conversation_name) + 1
+        if default_index != 0
+        else default_index,
+    )
+    if conversation != conversation_name:
+        with open(os.path.join("conversation.txt"), "w") as f:
+            f.write(conversation_name)
+        try:
+            st.experimental_rerun()
+        except Exception as e:
+            logging.info(e)
+    return conversation_name
