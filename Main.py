@@ -10,7 +10,7 @@ st.set_page_config(
 
 try:
     with open("./.streamlit/config.toml") as f:
-        if "Dark" in f.read():
+        if "dark" in f.read():
             light_theme = False
 except:
     light_theme = False
