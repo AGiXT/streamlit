@@ -230,15 +230,19 @@ def conversation_selection(agent_name):
     conversations = ApiClient.get_conversations(
         agent_name=agent_name if agent_name else "OpenAI"
     )
-    conversation_name = st.selectbox(
-        "Choose a conversation",
-        [""] + conversations,
-        index=conversations.index(conversation) + 1
-        if conversation in conversations
-        else 0
-        if conversations == []
-        else 1,
-    )
+    # New conversation checkbox
+    new_conversation = st.checkbox("New Conversation", value=False)
+    if len(conversations) == 0 or new_conversation:
+        conversation_name = st.text_input("Conversation Name", value="")
+    else:
+        conversation_name = st.selectbox(
+            "Choose a conversation",
+            conversations,
+            index=conversations.index(conversation)
+            if conversation in conversations
+            else 0,
+        )
+
     if conversation != conversation_name:
         with open(os.path.join("conversation.txt"), "w") as f:
             f.write(conversation_name)
