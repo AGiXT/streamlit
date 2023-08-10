@@ -228,6 +228,8 @@ def conversation_selection(agent_name):
     except FileNotFoundError:
         conversation = ""
     conversations = ApiClient.get_conversations(agent_name=agent_name)
+    if isinstance(conversations, str):
+        conversations = []
     conversation_name = st.selectbox(
         "Choose a conversation",
         [""] + conversations,
