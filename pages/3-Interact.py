@@ -1,6 +1,6 @@
 import streamlit as st
 import uuid
-from components.selectors import agent_selection, skip_args
+from components.selectors import agent_selection, conversation_selection, skip_args
 from ApiClient import ApiClient
 from components.learning import learning_page
 from components.history import get_history
@@ -30,41 +30,18 @@ agent_name = agent_selection() if mode != "Chains" else None
 
 if mode != "Learning":
     with st.container():
-        if agent_name:
-            conversations = ApiClient.get_conversations(agent_name=agent_name)
-            if "conversation" not in st.session_state:
-                st.session_state["conversation"] = ""
-            conversation_index = 1 if len(conversations) > 0 else 0
-            default_index = (
-                conversation_index if st.session_state["conversation"] != "" else None
-            )
-            st.session_state["conversation"] = st.selectbox(
-                "Choose a conversation",
-                [""] + conversations,
-                index=conversations.index(st.session_state["conversation"]) + 1
-                if default_index != 0
-                else default_index,
-            )
-            if st.session_state["conversation"] == "":
-                st.session_state["conversation"] = uuid.uuid4()
-            if st.button("Delete Conversation"):
-                ApiClient.delete_conversation(
-                    agent_name=agent_name,
-                    conversation_name=st.session_state["conversation"],
-                )
-                st.success("Agent history deleted successfully.")
-            st.session_state["chat_history"] = get_history(
+        conversations = ApiClient.get_conversations(agent_name=agent_name)
+        st.session_state["conversation"] = conversation_selection()
+        if st.button("Delete Conversation"):
+            ApiClient.delete_conversation(
                 agent_name=agent_name,
                 conversation_name=st.session_state["conversation"],
             )
-            # Add a button to delete agent history
-
-        if "conversation" not in st.session_state:
-            st.session_state["conversation"] = uuid.uuid4()
-        st.session_state["conversation"] = (
-            st.session_state["conversation"]
-            if st.session_state["conversation"] != ""
-            else uuid.uuid4()
+            st.success("Conversation history deleted successfully.")
+            st.experimental_rerun()
+        st.session_state["chat_history"] = get_history(
+            agent_name=agent_name,
+            conversation_name=st.session_state["conversation"],
         )
 
 # If the user selects Prompt, then show the prompt functionality
