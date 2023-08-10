@@ -1,3 +1,4 @@
+import uuid
 import streamlit as st
 from components.selectors import agent_selection, conversation_selection, skip_args
 from ApiClient import ApiClient
@@ -153,6 +154,8 @@ if mode == "Chat":
         )
     # Button to execute the prompt
     if st.button("Send"):
+        if st.session_state["conversation"] == "":
+            st.session_state["conversation"] = uuid.uuid4()
         # Call the prompt_agent function
         with st.spinner("Thinking, please wait..."):
             agent_prompt_resp = ApiClient.prompt_agent(
@@ -179,6 +182,8 @@ if mode == "Instruct":
     send_button = st.button("Send Message")
 
     if send_button:
+        if st.session_state["conversation"] == "":
+            st.session_state["conversation"] = uuid.uuid4()
         if agent_name and instruct_prompt:
             with st.spinner("Thinking, please wait..."):
                 response = ApiClient.prompt_agent(
@@ -223,7 +228,11 @@ if mode == "Chains":
         for arg in args_copy:
             if args[arg] == "":
                 del args[arg]
-    args["conversation_name"] = st.session_state["conversation"]
+    args["conversation_name"] = (
+        st.session_state["conversation"]
+        if st.session_state["conversation"] != ""
+        else uuid.uuid4()
+    )
     single_step = st.checkbox("Run a Single Step")
     if single_step:
         from_step = st.number_input("Step Number to Run", min_value=1, value=1)
