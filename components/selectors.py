@@ -229,7 +229,7 @@ def conversation_selection(agent_name):
         conversation = ""
     conversations = ApiClient.get_conversations(agent_name=agent_name)
     if isinstance(conversations, str):
-        conversations = []
+        conversations = [conversations]
     conversation_name = st.selectbox(
         "Choose a conversation",
         [""] + conversations,
