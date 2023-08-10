@@ -1,4 +1,5 @@
 from ApiClient import ApiClient
+from components.history import get_history
 import streamlit as st
 import os
 import logging
@@ -231,23 +232,44 @@ def conversation_selection(agent_name):
         agent_name=agent_name if agent_name else "OpenAI"
     )
     # New conversation checkbox
-    new_conversation = st.checkbox("New Conversation", value=False)
-    if len(conversations) == 0 or new_conversation:
-        conversation_name = st.text_input("Conversation Name", value="")
-    else:
-        conversation_name = st.selectbox(
-            "Choose a conversation",
-            conversations,
-            index=conversations.index(conversation)
-            if conversation in conversations
-            else 0,
-        )
+    with st.container():
+        new_convo = st.checkbox("New Conversation", value=False)
+        if len(conversations) == 0 or new_convo:
+            conversation_name = st.text_input("Conversation Name", value="")
+            if st.button("Create New Conversation"):
+                ApiClient.new_conversation(
+                    agent_name=agent_name if agent_name else "OpenAI",
+                    conversation_name=conversation_name,
+                )
+                with open(os.path.join("conversation.txt"), "w") as f:
+                    f.write(conversation_name)
+                st.success(
+                    "Conversation created successfully. Please uncheck 'New Conversation' to interact."
+                )
+                return conversation_name
+        else:
+            conversation_name = st.selectbox(
+                "Choose a conversation",
+                conversations,
+                index=conversations.index(conversation)
+                if conversation in conversations
+                else 0,
+            )
+            if st.button("Delete Conversation"):
+                ApiClient.delete_conversation(
+                    agent_name=agent_name,
+                    conversation_name=st.session_state["conversation"],
+                )
+                with open(os.path.join("conversation.txt"), "w") as f:
+                    f.write("")
+                st.success("Conversation history deleted successfully.")
+                st.experimental_rerun()
+            chat_history = get_history(
+                agent_name=agent_name, conversation_name=conversation_name
+            )
 
     if conversation != conversation_name:
         with open(os.path.join("conversation.txt"), "w") as f:
             f.write(conversation_name)
-        try:
-            st.experimental_rerun()
-        except Exception as e:
-            logging.info(e)
+        st.experimental_rerun()
     return conversation_name
