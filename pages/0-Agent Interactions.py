@@ -2,8 +2,6 @@ import streamlit as st
 import os
 from components.selectors import agent_selection, conversation_selection, skip_args
 from ApiClient import ApiClient
-from components.learning import learning_page
-from components.history import get_history
 from components.docs import agixt_docs
 
 st.set_page_config(
@@ -40,9 +38,7 @@ if mode != "Chains":
             "Enable Browsing Links in the user input", value=False
         )
         websearch = st.checkbox("Enable websearch")
-        websearch_depth = (
-            3 if websearch else 0
-        )  # Default depth is 3 if websearch is enabled
+        websearch_depth = 3 if websearch else 0
         enable_memory = st.checkbox(
             "Enable Memory Training (Any messages sent to and from the agent will be added to memory if enabled.)",
             value=False,
@@ -59,22 +55,16 @@ if mode != "Chains":
         websearch_depth = st.number_input(
             "Websearch depth", min_value=1, value=3, key="websearch_depth"
         )
-    # Button to execute the prompt
     prompt_args_values = {}
     if mode == "Prompt":
         prompts = ApiClient.get_prompts()
-        st.markdown("### Choose a Prompt")
-        # Add a dropdown to select a prompt
-        # Get the prompt name, set the default prompt name to "Custom Input"
         try:
             custom_input_index = prompts.index("Custom Input")
         except:
             custom_input_index = 0
         prompt_name = st.selectbox("Choose a prompt", prompts, index=custom_input_index)
-        # Fetch arguments for the selected prompt
         prompt_args = ApiClient.get_prompt_args(prompt_name=prompt_name)
-        # Add input fields for prompt arguments
-        st.markdown("### Prompt Variables")
+        st.markdown("**Prompt Variables**")
         for arg in prompt_args:
             if arg not in skip_args:
                 prompt_args_values[arg] = st.text_area(arg)
@@ -85,8 +75,6 @@ if mode != "Chains":
         )
     else:
         user_input = st.text_area("User Input")
-
-    # Button to execute the prompt
     if st.button("Send"):
         if prompt_args_values == {}:
             prompt_args_values = {
@@ -127,15 +115,12 @@ else:
         agent_name = agent_selection()
     else:
         agent_name = ""
-
-    # Run single step check box
     user_input = st.text_area("User Input")
     args = {}
     if chain_name:
         chain_args = ApiClient.get_chain_args(chain_name=chain_name)
         for arg in chain_args:
             if arg not in skip_args and arg != "user_input":
-                # Add a checkbox to override the arg
                 override_arg = st.checkbox(f"Override `{arg}` argument.")
                 if override_arg:
                     args[arg] = st.text_area(arg)
