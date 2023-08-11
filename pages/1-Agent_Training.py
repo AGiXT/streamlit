@@ -15,7 +15,7 @@ agixt_docs()
 
 st.header("Agent Training")
 agent_name = agent_selection()
-
+st.markdown("---")
 if agent_name:
     if agent_name:
         st.markdown("### Learn from a file")
@@ -45,7 +45,7 @@ if agent_name:
                     + "' has learned from file: "
                     + learn_file_upload.name
                 )
-
+        st.markdown("---")
         st.markdown("### Learn from a URL")
         learn_url = st.text_input("Enter a URL for the agent to learn from..")
         if st.button("Learn from URL"):
@@ -55,20 +55,24 @@ if agent_name:
                 st.success(
                     f"Agent '{agent_name}' has learned from the URL {learn_url}."
                 )
-
+        st.markdown("---")
         st.markdown("### Learn from GitHub Repository")
         github_repo = st.text_input(
             "Enter a GitHub repository for the agent to learn from.. For example, 'Josh-XT/AGiXT'"
         )
-        github_branch = st.text_input(
-            "Enter a GitHub branch. (Default is main)", value="main"
-        )
-        github_user = st.text_input(
-            "Enter the GitHub user or organization name. (Optional, only necessary for private repositories)"
-        )
-        github_token = st.text_input(
-            "Enter a GitHub personal access token. (Optional, only necessary for private repositories)"
-        )
+        branch = st.checkbox("Use a branch other than `main`")
+        if branch:
+            github_branch = st.text_input("Enter a GitHub branch. (Default is main)")
+        else:
+            github_branch = "main"
+        # Private repository checkbox
+        private_repo = st.checkbox("Private repository")
+        if private_repo:
+            github_user = st.text_input("Enter the GitHub user or organization name.")
+            github_token = st.text_input("Enter a GitHub personal access token.")
+        else:
+            github_user = None
+            github_token = None
         if st.button("Learn from GitHub Repository"):
             if github_repo:
                 with st.spinner("Learning, please wait..."):
@@ -81,7 +85,7 @@ if agent_name:
                 st.success(
                     f"Agent '{agent_name}' has learned from the GitHub repository {github_repo}."
                 )
-
+        st.markdown("---")
         st.markdown("### Wipe Agent Memory")
         st.markdown(
             "The agent can simply learn too much undesired information at times. If you're having an issue with the context being injected from memory with your agent, try wiping the memory."
