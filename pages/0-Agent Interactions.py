@@ -65,6 +65,9 @@ if mode != "Chains":
         except:
             custom_input_index = 0
         prompt_name = st.selectbox("Choose a prompt", prompts, index=custom_input_index)
+        prompt_content = ApiClient.get_prompt(prompt_name=prompt_name)
+        st.markdown("**Prompt Content**")
+        st.code(prompt_content, language="markdown", line_numbers=True)
         prompt_args = ApiClient.get_prompt_args(prompt_name=prompt_name)
         st.markdown("**Prompt Variables**")
         for arg in prompt_args:
