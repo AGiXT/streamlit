@@ -53,7 +53,6 @@ if mode != "Chains":
 
 if mode == "Chains":
     chain_names = ApiClient.get_chains()
-    chain_name = st.selectbox("Select a Chain to Run", chain_names)
     agent_override = st.checkbox("Override Agent")
     if agent_override:
         agent_name = agent_selection()
@@ -74,6 +73,8 @@ if mode == "Chains":
         single_step = False
     args = chain_selection()
     args["conversation_name"] = st.session_state["conversation"]
+    chain_name = args["chain"] if "chain" in args else ""
+    user_input = args["input"] if "input" in args else ""
     if single_step:
         if st.button("Run Chain Step"):
             if chain_name:
