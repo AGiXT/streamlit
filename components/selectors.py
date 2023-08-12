@@ -11,6 +11,11 @@ def cached_get_extensions():
 
 
 @st.cache_data
+def cached_get_prompt_categories():
+    return ApiClient.get_prompt_categories()
+
+
+@st.cache_data
 def cached_get_prompts():
     return ApiClient.get_prompts()
 
@@ -36,7 +41,15 @@ def build_args(args: dict = {}, prompt: dict = {}, step_number: int = 0):
 
 
 def prompt_selection(prompt: dict = {}, step_number: int = 0):
-    available_prompts = cached_get_prompts()
+    prompt_category = st.selectbox(
+        "Select Prompt Category",
+        cached_get_prompt_categories(),
+        index=cached_get_prompt_categories().index(
+            prompt.get("prompt_category", "Default")
+        ),
+        key=f"step_{step_number}_prompt_category",
+    )
+    available_prompts = ApiClient.get_prompts(prompt_category=prompt_category)
     prompt_name = st.selectbox(
         "Select Custom Prompt",
         [""] + available_prompts,
@@ -112,6 +125,7 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         args["websearch_depth"] = int(websearch_depth)
         args["context_results"] = int(context_results)
         args["disable_memory"] = disable_memory
+        args["prompt_category"] = prompt_category
         args["shots"] = int(shots)
         new_prompt = {
             "prompt_name": prompt_name,
