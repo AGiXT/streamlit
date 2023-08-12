@@ -17,11 +17,11 @@ st.header("Agent Training")
 agent_name = agent_selection()
 if agent_name:
     mode = st.selectbox(
-        "Select Training Mode",
+        "Select Training Source",
         ["File", "Website", "GitHub Repository"],
     )
     if mode == "File":
-        st.markdown("### File Training Mode")
+        st.markdown("### Train from Files")
         st.markdown(
             "The agent will accept zip files, any kind of plain text file, PDF files, CSV, XLSX, and more. The agent will read the files into its long term memory."
         )
