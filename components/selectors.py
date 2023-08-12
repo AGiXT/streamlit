@@ -125,7 +125,7 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
     prompt_name = st.selectbox(
         "Select Custom Prompt",
         available_prompts,
-        index=available_prompts.index(prompt.get("prompt_name", "")) + 1
+        index=available_prompts.index(prompt.get("prompt_name", ""))
         if "prompt_name" in prompt
         else custom_input_index,
         key=f"step_{step_number}_prompt_name",
@@ -186,10 +186,8 @@ def chain_selection(prompt: dict = {}, step_number: int = 0):
     available_chains = ApiClient.get_chains()
     chain_name = st.selectbox(
         "Select Chain",
-        [""] + available_chains,
-        index=available_chains.index(prompt.get("chain_name", "")) + 1
-        if "chain" in prompt
-        else 0,
+        available_chains,
+        index=available_chains.index(prompt["chain"]) if "chain" in prompt else 0,
         key=f"step_{step_number}_chain_name",
     )
     user_input = st.text_input(
