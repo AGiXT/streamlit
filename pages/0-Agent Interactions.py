@@ -92,6 +92,7 @@ if mode == "Chains":
                 st.error("Chain name is required.")
     else:
         if st.button("Run Chain"):
+            all_responses = args["all_responses"] if "all_responses" not in args else False 
             if chain_name:
                 responses = ApiClient.run_chain(
                     chain_name=chain_name,
