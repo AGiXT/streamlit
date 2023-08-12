@@ -28,17 +28,18 @@ try:
 except:
     agent_name = "OpenAI"
 st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
-mode = st.selectbox("Select Mode", ["Chat", "Chains", "Prompt", "Instruct"])
+mode = st.selectbox(
+    "Select Agent Interaction Mode", ["Chat", "Chains", "Prompt", "Instruct"]
+)
 agent_name = agent_selection() if mode != "Chains" else None
 prompt_name = "Chat" if mode != "Instruct" else "instruct"
 
+if mode == "Chat" or mode == "Instruct":
+    prompt_args_values = prompt_options()
+    user_input = st.text_area("User Input")
+if mode == "Prompt":
+    prompt_arg_values = prompt_selection()
 if mode != "Chains":
-    if mode != "Prompt":
-        prompt_args_values = prompt_options(prompt={})
-        user_input = st.text_area("User Input")
-    else:
-        prompt_arg_values = prompt_selection()
-
     if st.button("Send"):
         prompt_args_values["conversation_name"] = st.session_state["conversation"]
         with st.spinner("Thinking, please wait..."):
@@ -49,7 +50,8 @@ if mode != "Chains":
             )
             if response:
                 st.experimental_rerun()
-else:
+
+if mode == "Chains":
     chain_names = ApiClient.get_chains()
     chain_name = st.selectbox("Select a Chain to Run", chain_names)
     agent_override = st.checkbox("Override Agent")
