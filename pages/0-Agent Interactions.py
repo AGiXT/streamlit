@@ -3,7 +3,7 @@ import os
 from components.selectors import (
     agent_selection,
     conversation_selection,
-    skip_args,
+    chain_selection,
     prompt_options,
     prompt_selection,
 )
@@ -72,20 +72,7 @@ if mode == "Chains":
             )
     else:
         single_step = False
-    user_input = st.text_area("User Input")
-    args = {}
-    if chain_name:
-        chain_args = ApiClient.get_chain_args(chain_name=chain_name)
-        for arg in chain_args:
-            if arg not in skip_args and arg != "user_input":
-                override_arg = st.checkbox(f"Override `{arg}` argument.")
-                if override_arg:
-                    args[arg] = st.text_area(arg)
-    if args != {}:
-        args_copy = args.copy()
-        for arg in args_copy:
-            if args[arg] == "":
-                del args[arg]
+    args = chain_selection()
     args["conversation_name"] = st.session_state["conversation"]
     if single_step:
         if st.button("Run Chain Step"):

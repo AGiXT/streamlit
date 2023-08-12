@@ -190,15 +190,27 @@ def chain_selection(prompt: dict = {}, step_number: int = 0):
         index=available_chains.index(prompt["chain"]) if "chain" in prompt else 0,
         key=f"step_{step_number}_chain_name",
     )
-    user_input = st.text_input(
+    user_input = st.text_area(
         "User Input",
         value=prompt.get("input", ""),
         key=f"user_input_{step_number}",
     )
-
+    args = {}
     if chain_name:
-        new_prompt = {"chain": chain_name, "input": user_input}
-        return new_prompt
+        chain_args = ApiClient.get_chain_args(chain_name=chain_name)
+        for arg in chain_args:
+            if arg not in skip_args and arg != "user_input":
+                override_arg = st.checkbox(f"Override `{arg}` argument.")
+                if override_arg:
+                    args[arg] = st.text_area(arg)
+        args["chain"] = chain_name
+        args["input"] = user_input
+    if args != {}:
+        args_copy = args.copy()
+        for arg in args_copy:
+            if args[arg] == "":
+                del args[arg]
+    return args
 
 
 def agent_selection(key: str = "select_learning_agent", heading: str = "Agent Name"):
