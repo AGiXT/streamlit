@@ -15,6 +15,9 @@ st.session_state = {}
 chain_names = ApiClient.get_chains()
 agents = ApiClient.get_agents()
 st.header("Chain Management")
+show_injection_var_docs = st.checkbox("Show Prompt Injection Variable Documentation")
+if show_injection_var_docs:
+    predefined_injection_variables()
 chain_action = st.selectbox("Action", ["Create Chain", "Modify Chain", "Delete Chain"])
 
 if chain_action == "Create Chain":
@@ -56,7 +59,3 @@ elif chain_action == "Modify Chain":
         chain = modify_chain(chain_name=chain_name, agents=agents)
     else:
         st.warning("Please select a chain to manage steps.")
-
-show_injection_var_docs = st.checkbox("Show Prompt Injection Variable Documentation")
-if show_injection_var_docs:
-    predefined_injection_variables()

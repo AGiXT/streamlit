@@ -10,16 +10,6 @@ def cached_get_extensions():
     return ApiClient.get_extensions()
 
 
-@st.cache_data
-def cached_get_prompt_categories():
-    return ApiClient.get_prompt_categories()
-
-
-@st.cache_data
-def cached_get_prompts():
-    return ApiClient.get_prompts()
-
-
 skip_args = [
     "command_list",
     "context",
@@ -40,103 +30,128 @@ def build_args(args: dict = {}, prompt: dict = {}, step_number: int = 0):
     }
 
 
+def prompt_options(prompt: dict = {}, step_number: int = 0):
+    if prompt == {}:
+        ops = False
+    else:
+        for opt in [
+            "shots",
+            "context_results",
+            "browse_links",
+            "websearch",
+            "websearch_depth",
+            "disable_memory",
+        ]:
+            if opt not in prompt:
+                ops = False
+                break
+            else:
+                ops = True
+    advanced_options = st.checkbox(
+        "Show Advanced Options", value=ops, key=f"advanced_options_{step_number}"
+    )
+    if advanced_options:
+        shots = st.number_input(
+            "Shots (How many times to ask the agent)",
+            min_value=1,
+            value=1 if "shots" not in prompt else int(prompt["shots"]),
+            key=f"shots_{step_number}",
+        )
+        context_results = st.number_input(
+            "How many long term memories to inject (Default is 5)",
+            min_value=1,
+            value=5
+            if "context_results" not in prompt
+            else int(prompt["context_results"]),
+            key=f"context_results_{step_number}",
+        )
+        browse_links = st.checkbox(
+            "Enable Browsing Links in the user input",
+            value=False if "browse_links" not in prompt else prompt["browse_links"],
+            key=f"browse_links_{step_number}",
+        )
+        websearch = st.checkbox("Enable websearch")
+        if websearch:
+            websearch_depth = st.number_input(
+                "Websearch depth",
+                min_value=1,
+                value=3,
+                key=f"websearch_depth_{step_number}",
+            )
+        else:
+            websearch_depth = 0
+        if "disable_memory" not in prompt:
+            enable_memory = st.checkbox(
+                "Enable Memory Training (Any messages sent to and from the agent will be added to memory if enabled.)",
+                value=False,
+                key=f"enable_memory_{step_number}",
+            )
+        else:
+            enable_memory = st.checkbox(
+                "Enable Memory Training (Any messages sent to and from the agent will be added to memory if enabled.)",
+                value=True if prompt["disable_memory"] == False else False,
+                key=f"enable_memory_{step_number}",
+            )
+    else:
+        shots = 1
+        context_results = 5
+        browse_links = False
+        websearch = False
+        websearch_depth = 0
+        enable_memory = False
+    return {
+        "shots": shots,
+        "context_results": context_results,
+        "browse_links": browse_links,
+        "websearch": websearch,
+        "websearch_depth": websearch_depth,
+        "disable_memory": (True if enable_memory == False else False),
+    }
+
+
 def prompt_selection(prompt: dict = {}, step_number: int = 0):
+    prompt_categories = ApiClient.get_prompt_categories()
     prompt_category = st.selectbox(
         "Select Prompt Category",
-        cached_get_prompt_categories(),
-        index=cached_get_prompt_categories().index(
-            prompt.get("prompt_category", "Default")
-        ),
+        prompt_categories,
+        index=prompt_categories.index("Default"),
         key=f"step_{step_number}_prompt_category",
     )
     available_prompts = ApiClient.get_prompts(prompt_category=prompt_category)
+    try:
+        custom_input_index = available_prompts.index("Custom Input")
+    except:
+        custom_input_index = 0
     prompt_name = st.selectbox(
         "Select Custom Prompt",
-        [""] + available_prompts,
+        available_prompts,
         index=available_prompts.index(prompt.get("prompt_name", "")) + 1
         if "prompt_name" in prompt
-        else 0,
+        else custom_input_index,
         key=f"step_{step_number}_prompt_name",
     )
-    if prompt_name:
-        prompt_content = ApiClient.get_prompt(prompt_name=prompt_name)
-        st.markdown("**Prompt Content**")
-        st.markdown(
-            f"""
+    prompt_content = ApiClient.get_prompt(
+        prompt_name=prompt_name, prompt_category=prompt_category
+    )
+    st.markdown(
+        f"""
 **Prompt Content**
 ```
 {prompt_content}
 ```
-            """
-        )
-    browse_links = st.checkbox(
-        "Enable Browsing Links in the user input",
-        value=prompt["browse_links"] if "browse_links" in prompt else False,
-        key=f"browse_links_{step_number}",
+        """
     )
-    websearch = st.checkbox(
-        "Enable websearch",
-        value=prompt["websearch"] if "websearch" in prompt else False,
-        key=f"websearch_{step_number}",
-    )
-    websearch_depth = (
-        3 if websearch else 0
-    )  # Default depth is 3 if websearch is enabled
-
-    # Add an input field for websearch depth if websearch is enabled
-    if websearch:
-        websearch_depth = st.number_input(
-            "Websearch depth",
-            min_value=1,
-            value=int(prompt["websearch_depth"]) if "websearch_depth" in prompt else 3,
-            key=f"websearch_depth_{step_number}",
-        )
-    advanced_options = st.checkbox(
-        "Show Advanced Options", value=False, key=f"advanced_options_{step_number}"
-    )
-    if advanced_options:
-        # Add an input field for shots
-        shots = st.number_input(
-            "Shots (How many times to ask the agent)",
-            min_value=1,
-            value=int(prompt["shots"]) if "shots" in prompt else 1,
-            key=f"shots_{step_number}",
-        )
-        context_results = st.number_input(
-            "How many memories to inject (Default is 5)",
-            min_value=1,
-            value=int(prompt["context_results"]) if "context_results" in prompt else 5,
-            key=f"context_results_{step_number}",
-        )
-        disable_memory = st.checkbox(
-            "Disable Memory",
-            value=prompt["disable_memory"] if "disable_memory" in prompt else False,
-            key=f"disable_memory_{step_number}",
-        )
-    else:
-        shots = 1
-        context_results = 5
-        disable_memory = False
-
-    if "user_input" in prompt and "context" in prompt:
-        context_results = st.number_input(
-            "Context results",
-            min_value=1,
-            value=int(prompt["context_results"]) if "context_results" in prompt else 5,
-        )
+    prompt_args_values = prompt_options(prompt=prompt, step_number=step_number)
     if prompt_name:
-        prompt_args = ApiClient.get_prompt_args(prompt_name)
+        prompt_args = ApiClient.get_prompt_args(
+            prompt_name=prompt_name, prompt_category=prompt_category
+        )
         args = build_args(args=prompt_args, prompt=prompt, step_number=step_number)
-        args["websearch"] = websearch
-        args["browse_links"] = browse_links
-        args["websearch_depth"] = int(websearch_depth)
-        args["context_results"] = int(context_results)
-        args["disable_memory"] = disable_memory
-        args["prompt_category"] = prompt_category
-        args["shots"] = int(shots)
         new_prompt = {
             "prompt_name": prompt_name,
+            "prompt_category": prompt_category,
             **args,
+            **prompt_args_values,
         }
         return new_prompt
 

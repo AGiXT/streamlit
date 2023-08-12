@@ -11,6 +11,21 @@ st.set_page_config(
 agixt_docs()
 
 st.header("Prompt Management")
+show_documentation = st.checkbox("Show Documentation")
+if show_documentation:
+    st.markdown("### Usage Instructions")
+    st.markdown(
+        """
+    To create dynamic prompts that can have user inputs, you can use curly braces `{}` in your prompt content. 
+    Anything between the curly braces will be considered as an input field. For example:
+
+    ```python
+    "Hello, my name is {name} and I'm {age} years old."
+    ```
+    In the above prompt, `name` and `age` will be the input arguments. These arguments can be used in chains.
+    """
+    )
+    predefined_injection_variables()
 
 prompt_categories = ApiClient.get_prompt_categories()
 action = st.selectbox("Action", ["Create New Prompt", "Modify Prompt", "Delete Prompt"])
@@ -40,7 +55,11 @@ else:
         if prompt_file:
             prompt_name = prompt_file.name.split(".")[0]
             prompt_content = prompt_file.read().decode("utf-8")
-            ApiClient.add_prompt(prompt_name=prompt_name, prompt=prompt_content)
+            ApiClient.add_prompt(
+                prompt_name=prompt_name,
+                prompt=prompt_content,
+                prompt_category=prompt_category,
+            )
             st.success(f"Prompt '{prompt_name}' added.")
         prompt_name = st.text_input("Prompt Name")
         prompt_content = st.text_area("Prompt Content", height=300)
@@ -62,29 +81,23 @@ else:
     if st.button("Perform Action"):
         if prompt_name and (prompt_content or action == "Delete Prompt"):
             if action == "Create New Prompt":
-                ApiClient.add_prompt(prompt_name=prompt_name, prompt=prompt_content)
+                ApiClient.add_prompt(
+                    prompt_name=prompt_name,
+                    prompt=prompt_content,
+                    prompt_category=prompt_category,
+                )
                 st.success(f"Prompt '{prompt_name}' added.")
             elif action == "Modify Prompt":
-                ApiClient.update_prompt(prompt_name=prompt_name, prompt=prompt_content)
+                ApiClient.update_prompt(
+                    prompt_name=prompt_name,
+                    prompt=prompt_content,
+                    prompt_category=prompt_category,
+                )
                 st.success(f"Prompt '{prompt_name}' updated.")
             elif action == "Delete Prompt":
-                ApiClient.delete_prompt(prompt_name)
+                ApiClient.delete_prompt(
+                    prompt_name=prompt_name, prompt_category=prompt_category
+                )
                 st.success(f"Prompt '{prompt_name}' deleted.")
         else:
             st.error("Prompt name and content are required.")
-
-st.markdown("### Usage Instructions")
-st.markdown(
-    """
-To create dynamic prompts that can have user inputs, you can use curly braces `{}` in your prompt content. 
-Anything between the curly braces will be considered as an input field. For example:
-
-```python
-"Hello, my name is {name} and I'm {age} years old."
-```
-In the above prompt, `name` and `age` will be the input arguments. These arguments can be used in chains.
-"""
-)
-show_injection_var_docs = st.checkbox("Show Prompt Injection Variable Documentation")
-if show_injection_var_docs:
-    predefined_injection_variables()
