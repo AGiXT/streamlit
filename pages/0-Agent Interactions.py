@@ -36,12 +36,10 @@ prompt_name = "Chat" if mode != "Instruct" else "instruct"
 
 if mode == "Chat" or mode == "Instruct":
     prompt_args_values = prompt_options()
-    user_input = st.text_area("User Input")
+    prompt_args_values["user_input"] = st.text_area("User Input")
 if mode == "Prompt":
-    prompt_arg_values = prompt_selection()
-    user_input = (
-        prompt_arg_values["user_input"] if "user_input" in prompt_arg_values else ""
-    )
+    prompt_args_values = prompt_selection()
+
 if mode != "Chains":
     if st.button("Send"):
         prompt_args_values["conversation_name"] = st.session_state["conversation"]
