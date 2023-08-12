@@ -2,7 +2,7 @@ import streamlit as st
 import os
 from components.selectors import agent_selection, conversation_selection, skip_args
 from ApiClient import ApiClient
-from components.docs import agixt_docs
+from components.docs import agixt_docs, predefined_injection_variables
 
 st.set_page_config(
     page_title="Agent Interactions",
@@ -59,15 +59,34 @@ if mode != "Chains":
         )
     prompt_args_values = {}
     if mode == "Prompt":
-        prompts = ApiClient.get_prompts()
+        prompt_categories = ApiClient.get_prompt_categories()
+        prompt_category = st.selectbox(
+            "Select Prompt Category",
+            prompt_categories,
+            index=prompt_categories.index("Default"),
+        )
+        prompts = ApiClient.get_prompts(prompt_category=prompt_category)
         try:
             custom_input_index = prompts.index("Custom Input")
         except:
             custom_input_index = 0
         prompt_name = st.selectbox("Choose a prompt", prompts, index=custom_input_index)
-        prompt_content = ApiClient.get_prompt(prompt_name=prompt_name)
-        st.markdown("**Prompt Content**")
-        st.code(prompt_content, language="markdown", line_numbers=True)
+        prompt_content = ApiClient.get_prompt(
+            prompt_name=prompt_name, prompt_category=prompt_category
+        )
+        st.markdown(
+            f"""
+**Prompt Content**
+```
+{prompt_content}
+```
+            """
+        )
+        show_injection_var_docs = st.checkbox(
+            "Show Prompt Injection Variable Documentation"
+        )
+        if show_injection_var_docs:
+            predefined_injection_variables()
         prompt_args = ApiClient.get_prompt_args(prompt_name=prompt_name)
         st.markdown("**Prompt Variables**")
         for arg in prompt_args:

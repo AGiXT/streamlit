@@ -61,10 +61,17 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
     if prompt_name:
         prompt_content = ApiClient.get_prompt(prompt_name=prompt_name)
         st.markdown("**Prompt Content**")
-        st.code(prompt_content, language="markdown", line_numbers=True)
+        st.markdown(
+            f"""
+**Prompt Content**
+```
+{prompt_content}
+```
+            """
+        )
     browse_links = st.checkbox(
         "Enable Browsing Links in the user input",
-        value=prompt["browse_links"] if "browse_links" in prompt else True,
+        value=prompt["browse_links"] if "browse_links" in prompt else False,
         key=f"browse_links_{step_number}",
     )
     websearch = st.checkbox(

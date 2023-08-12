@@ -1,6 +1,6 @@
 import streamlit as st
 from ApiClient import ApiClient
-from components.docs import agixt_docs
+from components.docs import agixt_docs, predefined_injection_variables
 
 
 st.set_page_config(
@@ -85,15 +85,6 @@ Anything between the curly braces will be considered as an input field. For exam
 In the above prompt, `name` and `age` will be the input arguments. These arguments can be used in chains.
 """
 )
-st.markdown("### Predefined Injection Variables")
-st.markdown(
-    """
-- `{agent_name}` will cause the agent name to be injected.
-- `{context}` will cause the current context from memory to be injected. This will only work if you have `{user_input}` in your prompt arguments for the memory search.
-- `{date}` will cause the current date and timestamp to be injected.
-- `{conversation_history}` will cause the conversation history to be injected.
-- `{COMMANDS}` will cause the available commands list to be injected and for automatic commands execution from the agent based on its suggestions.
-- `{command_list}` will cause the available commands list to be injected, but will not execute any commands the AI chooses. Useful on validation steps.
-- `{STEPx}` will cause the step `x` response from a chain to be injected. For example, `{STEP1}` will inject the first step's response in a chain.
-"""
-)
+show_injection_var_docs = st.checkbox("Show Prompt Injection Variable Documentation")
+if show_injection_var_docs:
+    predefined_injection_variables()
