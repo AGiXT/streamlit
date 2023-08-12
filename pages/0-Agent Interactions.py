@@ -39,13 +39,11 @@ if mode == "Chat" or mode == "Instruct":
     user_input = st.text_area("User Input")
 if mode == "Prompt":
     prompt_arg_values = prompt_selection()
+    user_input = (
+        prompt_arg_values["user_input"] if "user_input" in prompt_arg_values else ""
+    )
 if mode != "Chains":
     if st.button("Send"):
-        prompt_args_values["user_input"] = (
-            user_input
-            if "user_input" not in prompt_args_values
-            else prompt_args_values["user_input"]
-        )
         prompt_args_values["conversation_name"] = st.session_state["conversation"]
         with st.spinner("Thinking, please wait..."):
             response = ApiClient.prompt_agent(
