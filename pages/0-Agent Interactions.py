@@ -72,6 +72,8 @@ if mode == "Chains":
             )
     else:
         single_step = False
+        from_step = 1
+        all_responses = False
     args = chain_selection()
     args["conversation_name"] = st.session_state["conversation"]
     chain_name = args["chain"] if "chain" in args else ""
