@@ -15,10 +15,16 @@ agixt_docs()
 
 st.header("Agent Training")
 agent_name = agent_selection()
-st.markdown("---")
 if agent_name:
-    if agent_name:
-        st.markdown("### Learn from a file")
+    mode = st.selectbox(
+        "Select Training Mode",
+        ["File", "Website", "GitHub Repository"],
+    )
+    if mode == "File":
+        st.markdown("### File Training Mode")
+        st.markdown(
+            "The agent will accept zip files, any kind of plain text file, PDF files, CSV, XLSX, and more. The agent will read the files into its long term memory."
+        )
         learn_file_upload = st.file_uploader(
             "Upload a file for the agent to learn from.", accept_multiple_files=True
         )
@@ -31,7 +37,9 @@ if agent_name:
                     os.makedirs(os.path.dirname(learn_file_path))
                 with open(learn_file_path, "wb") as f:
                     f.write(learn_file_upload.getbuffer())
-                with st.spinner("Learning, please wait..."):
+                with st.spinner(
+                    "Training, please wait... This may take awhile depending on the size of the file."
+                ):
                     ApiClient.learn_file(
                         agent_name=agent_name,
                         file_name=learn_file_path,
@@ -45,18 +53,24 @@ if agent_name:
                     + "' has learned from file: "
                     + learn_file_upload.name
                 )
-        st.markdown("---")
-        st.markdown("### Learn from a URL")
+    elif mode == "Website":
+        st.markdown("### Train from Website")
+        st.markdown(
+            "The agent will scrape data from the website you provide into its long term memory."
+        )
         learn_url = st.text_input("Enter a URL for the agent to learn from..")
-        if st.button("Learn from URL"):
+        if st.button("Train from Website"):
             if learn_url:
-                with st.spinner("Learning, please wait..."):
+                with st.spinner("Training, please wait..."):
                     learn = ApiClient.learn_url(agent_name=agent_name, url=learn_url)
                 st.success(
                     f"Agent '{agent_name}' has learned from the URL {learn_url}."
                 )
-        st.markdown("---")
-        st.markdown("### Learn from GitHub Repository")
+    elif mode == "GitHub Repository":
+        st.markdown("### Train from GitHub Repository")
+        st.markdown(
+            "The agent will download all files from the GitHub repository you provide into its long term memory."
+        )
         github_repo = st.text_input(
             "Enter a GitHub repository for the agent to learn from.. For example, 'Josh-XT/AGiXT'"
         )
@@ -73,9 +87,11 @@ if agent_name:
         else:
             github_user = None
             github_token = None
-        if st.button("Learn from GitHub Repository"):
+        if st.button("Train from GitHub Repository"):
             if github_repo:
-                with st.spinner("Learning, please wait..."):
+                with st.spinner(
+                    f"Training {agent_name}, please wait... This can take some time depending on the size of the repository."
+                ):
                     learn = ApiClient.learn_github_repo(
                         agent_name=agent_name,
                         github_repo=github_repo,
@@ -85,11 +101,3 @@ if agent_name:
                 st.success(
                     f"Agent '{agent_name}' has learned from the GitHub repository {github_repo}."
                 )
-        st.markdown("---")
-        st.markdown("### Wipe Agent Memory")
-        st.markdown(
-            "The agent can simply learn too much undesired information at times. If you're having an issue with the context being injected from memory with your agent, try wiping the memory."
-        )
-        if st.button("Wipe agent memory"):
-            ApiClient.wipe_agent_memories(agent_name=agent_name)
-            st.success(f"Memory for agent '{agent_name}' has been cleared.")
