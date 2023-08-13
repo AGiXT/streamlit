@@ -35,19 +35,19 @@ agent_name = agent_selection() if mode != "Chains" else None
 prompt_name = "Chat" if mode != "Instruct" else "instruct"
 
 if mode == "Chat" or mode == "Instruct":
-    prompt_args_values = prompt_options()
-    prompt_args_values["user_input"] = st.text_area("User Input")
+    args = prompt_options()
+    args["user_input"] = st.text_area("User Input")
 if mode == "Prompt":
-    prompt_args_values = prompt_selection()
+    args = prompt_selection()
 
 if mode != "Chains":
     if st.button("Send"):
-        prompt_args_values["conversation_name"] = st.session_state["conversation"]
+        args["conversation_name"] = st.session_state["conversation"]
         with st.spinner("Thinking, please wait..."):
             response = ApiClient.prompt_agent(
                 agent_name=agent_name,
                 prompt_name=prompt_name,
-                prompt_args=prompt_args_values,
+                prompt_args=args,
             )
             if response:
                 st.experimental_rerun()
