@@ -25,7 +25,7 @@ def get_embed_providers():
 
 @st.cache_data
 def provider_settings(provider_name: str):
-    return ApiClient.get_provider_settings(provider_name)
+    return ApiClient.get_provider_settings(provider_name=provider_name)
 
 
 @st.cache_data
@@ -50,7 +50,7 @@ extension_setting_keys = get_extension_settings()
 
 def render_provider_settings(agent_settings, provider_name: str):
     try:
-        required_settings = provider_settings(provider_name)
+        required_settings = provider_settings(provider_name=provider_name)
         # remove "provider" from required settings
         required_settings.pop("provider")
     except (TypeError, ValueError):
@@ -180,7 +180,7 @@ if agent_name and not new_agent:
                 key="select_helper_agent",
                 heading="Select Helper Agent (Your agent will ask this one for help when it needs something.)",
             )
-            embedder_name = agent_settings.get("embedder", "")
+            embedder_name = agent_settings.get("embedder", "default")
             embedder_name = st.selectbox(
                 "Select Embedder",
                 embedders,
@@ -188,6 +188,9 @@ if agent_name and not new_agent:
                 if embedder_name in embedders
                 else 0,
             )
+            agent_settings[
+                "embedder"
+            ] = embedder_name  # Update the agent_settings with the selected embedder
             if "WEBSEARCH_TIMEOUT" not in agent_settings:
                 agent_settings["WEBSEARCH_TIMEOUT"] = 0
             websearch_timeout = st.number_input(
@@ -204,19 +207,15 @@ if agent_name and not new_agent:
                 key="AUTONOMOUS_EXECUTION",
             )
             agent_settings["AUTONOMOUS_EXECUTION"] = autonomous_execution
-            agent_settings[
-                "embedder"
-            ] = embedder_name  # Update the agent_settings with the selected embedder
-
             if provider_name:
-                provider_settings = render_provider_settings(
-                    agent_settings, provider_name
+                settings = render_provider_settings(
+                    agent_settings=agent_settings, provider_name=provider_name
                 )
-                agent_settings.update(provider_settings)
+                agent_settings.update(settings)
 
             st.subheader("Extension Settings")
             extension_settings = render_extension_settings(
-                extension_setting_keys, agent_settings
+                extension_settings=extension_setting_keys, agent_settings=agent_settings
             )
 
             # Update the extension settings in the agent_settings directly
