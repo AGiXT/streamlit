@@ -147,7 +147,9 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             value=False if "browse_links" not in prompt else prompt["browse_links"],
             key=f"browse_links_{step_number}",
         )
-        websearch = st.checkbox("Enable websearch")
+        websearch = st.checkbox(
+            "Enable websearch", value=False, key=f"websearch_{step_number}"
+        )
         if websearch:
             websearch_depth = st.number_input(
                 "Websearch depth",
