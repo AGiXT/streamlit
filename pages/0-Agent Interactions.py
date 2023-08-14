@@ -31,7 +31,8 @@ st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
 mode = st.selectbox(
     "Select Agent Interaction Mode", ["Chat", "Chains", "Prompt", "Instruct"]
 )
-agent_name = agent_selection() if mode != "Chains" else None
+
+agent_name = agent_selection() if mode != "Chains" else ""
 prompt_name = "Chat" if mode != "Instruct" else "instruct"
 
 if mode == "Chat" or mode == "Instruct":
@@ -57,8 +58,6 @@ if mode == "Chains":
     agent_override = st.checkbox("Override Agent")
     if agent_override:
         agent_name = agent_selection()
-    else:
-        agent_name = ""
     advanced_options = st.checkbox("Show Advanced Options")
     if advanced_options:
         single_step = st.checkbox("Run a Single Step")
