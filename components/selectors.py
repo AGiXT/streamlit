@@ -148,13 +148,17 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             key=f"browse_links_{step_number}",
         )
         websearch = st.checkbox(
-            "Enable websearch", value=False, key=f"websearch_{step_number}"
+            "Enable websearch",
+            value=False if "websearch" not in prompt else prompt["websearch"],
+            key=f"websearch_{step_number}",
         )
         if websearch:
             websearch_depth = st.number_input(
                 "Websearch depth",
                 min_value=1,
-                value=3,
+                value=3
+                if "websearch_depth" not in prompt
+                else int(prompt["websearch_depth"]),
                 key=f"websearch_depth_{step_number}",
             )
         else:
