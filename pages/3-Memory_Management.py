@@ -38,7 +38,7 @@ if agent_name:
         min_relevance_score = st.number_input(
             "Minimum relevance score (Default is 0.0)",
             min_value=0.0,
-            max_value=100.0,
+            max_value=1.0,
             value=0.0,
         )
     else:

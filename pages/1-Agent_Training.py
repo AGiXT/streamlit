@@ -20,9 +20,15 @@ if agent_name:
         "Select Training Source",
         ["Website", "File", "Text", "GitHub Repository"],
     )
-    collection_number = st.number_input(
-        "Inject memories from collection number (Default is 0)", min_value=0, value=0
-    )
+    advanced_options = st.checkbox("Show advanced options")
+    if advanced_options:
+        collection_number = st.number_input(
+            "Inject memories from collection number (Default is 0)",
+            min_value=0,
+            value=0,
+        )
+    else:
+        collection_number = 0
 
     if mode == "Website":
         st.markdown("### Train from Website")
