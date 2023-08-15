@@ -18,9 +18,30 @@ agent_name = agent_selection()
 if agent_name:
     mode = st.selectbox(
         "Select Training Source",
-        ["File", "Website", "GitHub Repository"],
+        ["Website", "File", "Text", "GitHub Repository"],
     )
-    if mode == "File":
+    collection_number = st.number_input(
+        "Inject memories from collection number (Default is 0)", min_value=0, value=0
+    )
+
+    if mode == "Website":
+        st.markdown("### Train from Website")
+        st.markdown(
+            "The agent will scrape data from the website you provide into its long term memory."
+        )
+        learn_url = st.text_input("Enter a URL for the agent to learn from..")
+        if st.button("Train from Website"):
+            if learn_url:
+                with st.spinner("Training, please wait..."):
+                    learn = ApiClient.learn_url(
+                        agent_name=agent_name,
+                        url=learn_url,
+                        collection_number=collection_number,
+                    )
+                st.success(
+                    f"Agent '{agent_name}' has learned from the URL {learn_url}."
+                )
+    elif mode == "File":
         st.markdown("### Train from Files")
         st.markdown(
             "The agent will accept zip files, any kind of plain text file, PDF files, CSV, XLSX, and more. The agent will read the files into its long term memory."
@@ -46,6 +67,7 @@ if agent_name:
                         file_content=base64.b64encode(learn_file_upload.read()).decode(
                             "utf-8"
                         ),
+                        collection_number=collection_number,
                     )
                 st.success(
                     "Agent '"
@@ -53,19 +75,26 @@ if agent_name:
                     + "' has learned from file: "
                     + learn_file_upload.name
                 )
-    elif mode == "Website":
-        st.markdown("### Train from Website")
+    elif mode == "Text":
+        st.markdown("### Train from Text")
         st.markdown(
-            "The agent will scrape data from the website you provide into its long term memory."
+            "The agent will read the text you provide into its long term memory."
         )
-        learn_url = st.text_input("Enter a URL for the agent to learn from..")
-        if st.button("Train from Website"):
-            if learn_url:
+        user_input = st.text_input(
+            "Enter some short text, description, or question to associate the learned text with."
+        )
+        learn_text = st.text_area("Enter some text for the agent to learn from.")
+        if st.button("Train from Text"):
+            if learn_text:
                 with st.spinner("Training, please wait..."):
-                    learn = ApiClient.learn_url(agent_name=agent_name, url=learn_url)
-                st.success(
-                    f"Agent '{agent_name}' has learned from the URL {learn_url}."
-                )
+                    learn = ApiClient.learn_text(
+                        agent_name=agent_name,
+                        user_input=user_input,
+                        text=learn_text,
+                        collection_number=collection_number,
+                    )
+                st.success(f"Agent '{agent_name}' has learned from the text provided.")
+
     elif mode == "GitHub Repository":
         st.markdown("### Train from GitHub Repository")
         st.markdown(
@@ -82,11 +111,18 @@ if agent_name:
         # Private repository checkbox
         private_repo = st.checkbox("Private repository")
         if private_repo:
-            github_user = st.text_input("Enter the GitHub user or organization name.")
-            github_token = st.text_input("Enter a GitHub personal access token.")
+            use_agent_settings = st.checkbox(
+                "Use agent settings for GitHub credentials", value=True
+            )
+            if not use_agent_settings:
+                github_user = st.text_input(
+                    "Enter the GitHub user or organization name."
+                )
+                github_token = st.text_input("Enter a GitHub personal access token.")
         else:
             github_user = None
             github_token = None
+            use_agent_settings = False
         if st.button("Train from GitHub Repository"):
             if github_repo:
                 with st.spinner(
@@ -97,6 +133,8 @@ if agent_name:
                         github_repo=github_repo,
                         github_user=github_user,
                         github_token=github_token,
+                        use_agent_settings=use_agent_settings,
+                        collection_number=collection_number,
                     )
                 st.success(
                     f"Agent '{agent_name}' has learned from the GitHub repository {github_repo}."

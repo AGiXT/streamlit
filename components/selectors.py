@@ -118,6 +118,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             "websearch",
             "websearch_depth",
             "disable_memory",
+            "inject_memories_from_collection_number",
         ]:
             if opt not in prompt:
                 ops = False
@@ -133,6 +134,14 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             min_value=1,
             value=1 if "shots" not in prompt else int(prompt["shots"]),
             key=f"shots_{step_number}",
+        )
+        inject_memories_from_collection_number = st.number_input(
+            "Inject memories from collection number (Default is 0)",
+            min_value=0,
+            value=0
+            if "inject_memories_from_collection_number" not in prompt
+            else int(prompt["inject_memories_from_collection_number"]),
+            key=f"inject_memories_from_collection_number_{step_number}",
         )
         context_results = st.number_input(
             "How many long term memories to inject (Default is 5)",
@@ -182,6 +191,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         websearch = False
         websearch_depth = 0
         enable_memory = False
+        inject_memories_from_collection_number = 0
     return {
         "shots": shots,
         "context_results": context_results,
@@ -189,6 +199,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         "websearch": websearch,
         "websearch_depth": websearch_depth,
         "disable_memory": (True if enable_memory == False else False),
+        "inject_memories_from_collection_number": inject_memories_from_collection_number,
     }
 
 
