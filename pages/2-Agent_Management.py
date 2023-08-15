@@ -175,7 +175,15 @@ if agent_name and not new_agent:
             "provider"
         ] = provider_name  # Update the agent_settings with the selected provider
         with st.form(key="update_agent_settings_form"):
-            st.subheader("Provider Settings")
+            st.subheader("Agent Settings")
+            if "AUTONOMOUS_EXECUTION" not in agent_settings:
+                agent_settings["AUTONOMOUS_EXECUTION"] = False
+            autonomous_execution = st.checkbox(
+                "Autonomous Execution (If checked, agent will run any enabled commands automatically, if not, it will create a chain of commands it would have executed.)",
+                value=bool(agent_settings["AUTONOMOUS_EXECUTION"]),
+                key="AUTONOMOUS_EXECUTION",
+            )
+            agent_settings["AUTONOMOUS_EXECUTION"] = autonomous_execution
             if "agent_helper_name" in agent_settings:
                 agent_helper_name = agent_settings["helper_agent_name"]
             else:
@@ -185,6 +193,7 @@ if agent_name and not new_agent:
                 key="select_helper_agent",
                 heading="Select Helper Agent (Your agent will ask this one for help when it needs something.)",
             )
+
             embedder_name = agent_settings.get("embedder", "default")
             embedder_name = st.selectbox(
                 "Select Embedder",
@@ -203,15 +212,7 @@ if agent_name and not new_agent:
                 value=int(agent_settings["WEBSEARCH_TIMEOUT"]),
                 key="WEBSEARCH_TIMEOUT",
             )
-            # Make a checkbox for autonomous_execution
-            if "AUTONOMOUS_EXECUTION" not in agent_settings:
-                agent_settings["AUTONOMOUS_EXECUTION"] = False
-            autonomous_execution = st.checkbox(
-                "Autonomous Execution (If checked, agent will run any enabled commands automatically, if not, it will create a chain of commands it would have executed.)",
-                value=bool(agent_settings["AUTONOMOUS_EXECUTION"]),
-                key="AUTONOMOUS_EXECUTION",
-            )
-            agent_settings["AUTONOMOUS_EXECUTION"] = autonomous_execution
+            st.subheader("Provider Settings")
             if provider_name:
                 settings = render_provider_settings(
                     agent_settings=agent_settings, provider_name=provider_name
