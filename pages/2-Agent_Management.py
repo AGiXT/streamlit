@@ -84,14 +84,19 @@ def render_extension_settings(extension_settings, agent_settings):
     rendered_settings = {}
 
     for extension, settings in extension_settings.items():
-        st.subheader(f"{extension}")
+        title_extension = extension.replace("_", " ").title()
+        st.subheader(f"{title_extension} Settings")
         for key, val in settings.items():
             if key in agent_settings:
                 default_value = agent_settings[key]
             else:
                 default_value = val if val else ""
-
-            user_val = st.text_input(key, value=default_value, key=f"{extension}_{key}")
+            if key.startswith("USE_") or key == "WORKING_DIRECTORY_RESTRICTED":
+                user_val = st.checkbox(key, value=bool(default_value), key=key)
+            else:
+                user_val = st.text_input(
+                    key, value=default_value, key=f"{extension}_{key}"
+                )
 
             # Check if the user value exists before saving the setting
             if user_val:
@@ -169,8 +174,8 @@ if agent_name and not new_agent:
         agent_settings[
             "provider"
         ] = provider_name  # Update the agent_settings with the selected provider
-
         with st.form(key="update_agent_settings_form"):
+            st.subheader("Provider Settings")
             if "agent_helper_name" in agent_settings:
                 agent_helper_name = agent_settings["helper_agent_name"]
             else:
@@ -213,7 +218,6 @@ if agent_name and not new_agent:
                 )
                 agent_settings.update(settings)
 
-            st.subheader("Extension Settings")
             extension_settings = render_extension_settings(
                 extension_settings=extension_setting_keys, agent_settings=agent_settings
             )
