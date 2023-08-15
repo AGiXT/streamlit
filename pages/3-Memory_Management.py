@@ -45,29 +45,30 @@ if agent_name:
         collection_number = 0
         limit = 10
         min_relevance_score = 0.0
-    st.session_state["memory_query"] = (
-        st.text_input(
-            "Search string (This will find similar results to anything you type with relevance score from memory.)"
+    with st.form(key="query_memory_form"):
+        st.session_state["memory_query"] = (
+            st.text_input(
+                "Search string (This will find similar results to anything you type with relevance score from memory.)"
+            )
+            if "memory_query" not in st.session_state
+            else st.text_input(
+                "Search string (This will find similar results to anything you type with relevance score from memory.)",
+                value=st.session_state["memory_query"],
+            )
         )
-        if "memory_query" not in st.session_state
-        else st.text_input(
-            "Search string (This will find similar results to anything you type with relevance score from memory.)",
-            value=st.session_state["memory_query"],
-        )
-    )
-    if st.button("Query Memory"):
-        response = ApiClient.get_agent_memories(
-            agent_name=agent_name,
-            user_input=st.session_state["memory_query"],
-            limit=limit,
-            min_relevance_score=min_relevance_score,
-            collection_number=collection_number,
-        )
-        st.session_state["response"] = response
-    elif "response" in st.session_state:
-        response = st.session_state["response"]
-    else:
-        response = []
+        if st.form_submit_button("Query Memory"):
+            response = ApiClient.get_agent_memories(
+                agent_name=agent_name,
+                user_input=st.session_state["memory_query"],
+                limit=limit,
+                min_relevance_score=min_relevance_score,
+                collection_number=collection_number,
+            )
+            st.session_state["response"] = response
+        elif "response" in st.session_state:
+            response = st.session_state["response"]
+        else:
+            response = []
     if response:
         st.markdown(f"**Total Memories:** `{len(response)}`")
     for memory in response:
@@ -75,7 +76,7 @@ if agent_name:
             with st.form(key=memory["id"]):
                 st.markdown(f"**Memory ID:** `{memory['id']}`")
                 st.markdown(f"**Relevance Score:** `{memory['relevance_score']}`")
-                st.markdown(f"**Memory Data:**")
+                st.markdown(f"**Memory:**")
                 st.markdown(f"```{memory['additional_metadata']}```")
                 if st.form_submit_button("Delete Memory"):
                     res = ApiClient.delete_agent_memory(
