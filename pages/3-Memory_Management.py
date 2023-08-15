@@ -17,6 +17,9 @@ try:
 except:
     agent_name = "OpenAI"
 st.header("Memory Management")
+st.markdown(
+    "The `Search Query` is essentially what you would type to the AI when you're talking to it, this will show you what results would be injected in context for anything you say to the AI based on its memory collection. This will find similar results to anything you type with relevance score from memory. You can choose to delete memories from the memory collection here."
+)
 agent_name = agent_selection()
 if agent_name:
     if "advanced_options" not in st.session_state:
@@ -45,14 +48,13 @@ if agent_name:
         collection_number = 0
         limit = 10
         min_relevance_score = 0.0
+
     with st.form(key="query_memory_form"):
         st.session_state["memory_query"] = (
-            st.text_input(
-                "Search string (This will find similar results to anything you type with relevance score from memory.)"
-            )
+            st.text_input("Search Query")
             if "memory_query" not in st.session_state
             else st.text_input(
-                "Search string (This will find similar results to anything you type with relevance score from memory.)",
+                "Search Query ",
                 value=st.session_state["memory_query"],
             )
         )
