@@ -47,7 +47,9 @@ if mode != "Chains":
         with st.spinner("Thinking, please wait..."):
             response = ApiClient.prompt_agent(
                 agent_name=agent_name,
-                prompt_name=prompt_name,
+                prompt_name=prompt_name
+                if "prompt_name" not in args
+                else args["prompt_name"],
                 prompt_args=args,
             )
             if response:
