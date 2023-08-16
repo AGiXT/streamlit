@@ -3,6 +3,7 @@ import streamlit as st
 from components.selectors import agent_selection
 from ApiClient import ApiClient
 from components.docs import agixt_docs
+from datetime import datetime
 
 st.set_page_config(
     page_title="Memory Management",
@@ -58,7 +59,10 @@ if agent_name:
                 value=st.session_state["memory_query"],
             )
         )
-        if st.form_submit_button("Query Memory"):
+        if (
+            st.form_submit_button("Query Memory")
+            and st.session_state["memory_query"] != ""
+        ):
             response = ApiClient.get_agent_memories(
                 agent_name=agent_name,
                 user_input=st.session_state["memory_query"],
@@ -76,8 +80,13 @@ if agent_name:
     for memory in response:
         if "id" in memory:
             with st.form(key=memory["id"]):
+                if "timestamp" in memory:
+                    memory["timestamp"] = datetime.strptime(
+                        memory["timestamp"], "%Y-%m-%dT%H:%M:%S.%f"
+                    ).strftime("%B %d, %Y, %I:%M:%S %p")
+                    st.markdown(f"**Created on** {memory['timestamp']}")
+                st.markdown(f"**Relevance Score:** {memory['relevance_score']}")
                 st.markdown(f"**Memory ID:** `{memory['id']}`")
-                st.markdown(f"**Relevance Score:** `{memory['relevance_score']}`")
                 st.markdown(f"**Memory:**")
                 st.markdown(f"```{memory['additional_metadata']}```")
                 if st.form_submit_button("Delete Memory"):
