@@ -33,11 +33,11 @@ mode = st.selectbox(
 )
 
 agent_name = agent_selection() if mode != "Chains" else ""
-prompt_name = "Chat" if mode != "Instruct" else "instruct"
 
 if mode == "Chat" or mode == "Instruct":
     args = prompt_options()
     args["user_input"] = st.text_area("User Input")
+    args["prompt_name"] = "Chat" if mode != "Instruct" else "instruct"
 if mode == "Prompt":
     args = prompt_selection()
 
@@ -47,9 +47,7 @@ if mode != "Chains":
         with st.spinner("Thinking, please wait..."):
             response = ApiClient.prompt_agent(
                 agent_name=agent_name,
-                prompt_name=prompt_name
-                if "prompt_name" not in args
-                else args["prompt_name"],
+                prompt_name=args["prompt_name"],
                 prompt_args=args,
             )
             if response:
@@ -60,6 +58,8 @@ if mode == "Chains":
     agent_override = st.checkbox("Override Agent")
     if agent_override:
         agent_name = agent_selection()
+    else:
+        agent_name = ""
     advanced_options = st.checkbox("Show Advanced Options")
     if advanced_options:
         single_step = st.checkbox("Run a Single Step")
