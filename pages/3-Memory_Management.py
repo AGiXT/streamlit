@@ -81,9 +81,12 @@ if agent_name:
         if "id" in memory:
             with st.form(key=memory["id"]):
                 if "timestamp" in memory:
-                    memory["timestamp"] = datetime.strptime(
-                        memory["timestamp"], "%Y-%m-%dT%H:%M:%S.%f"
-                    ).strftime("%B %d, %Y, %I:%M:%S %p")
+                    try:
+                        memory["timestamp"] = datetime.strptime(
+                            memory["timestamp"], "%Y-%m-%dT%H:%M:%S.%f"
+                        ).strftime("%B %d, %Y, %I:%M:%S %p")
+                    except:
+                        memory["timestamp"] = memory["timestamp"]
                     st.markdown(f"**Created on** {memory['timestamp']}")
                 st.markdown(f"**Relevance Score:** {memory['relevance_score']}")
                 st.markdown(f"**Memory ID:** `{memory['id']}`")
