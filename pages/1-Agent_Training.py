@@ -31,22 +31,36 @@ if agent_name:
         collection_number = 0
 
     if mode == "Website":
-        st.markdown("### Train from Website")
+        st.markdown("### Train from Websites")
         st.markdown(
-            "The agent will scrape data from the website you provide into its long term memory."
+            "The agent will scrape data from the websites you provide into its long term memory."
         )
-        learn_url = st.text_input("Enter a URL for the agent to learn from..")
-        if st.button("Train from Website"):
+        learn_url = st.text_area(
+            "Enter Website links for the agent to learn from.. (One URL per line)"
+        )
+        if st.button("Train from Websites"):
             if learn_url:
                 with st.spinner("Training, please wait..."):
-                    learn = ApiClient.learn_url(
-                        agent_name=agent_name,
-                        url=learn_url,
-                        collection_number=collection_number,
-                    )
-                st.success(
-                    f"Agent '{agent_name}' has learned from the URL {learn_url}."
-                )
+                    if "\n" in learn_url:
+                        learn_url = learn_url.split("\n")
+                        for url in learn_url:
+                            learn = ApiClient.learn_url(
+                                agent_name=agent_name,
+                                url=url,
+                                collection_number=collection_number,
+                            )
+                        st.success(
+                            f"Agent '{agent_name}' has learned from the following websites: {', '.join(learn_url)}."
+                        )
+                    else:
+                        learn = ApiClient.learn_url(
+                            agent_name=agent_name,
+                            url=learn_url,
+                            collection_number=collection_number,
+                        )
+                        st.success(
+                            f"Agent '{agent_name}' has learned from the website: {learn_url}."
+                        )
     elif mode == "File":
         st.markdown("### Train from Files")
         st.markdown(
