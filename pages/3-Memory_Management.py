@@ -51,13 +51,11 @@ if agent_name:
         min_relevance_score = 0.0
 
     with st.form(key="query_memory_form"):
-        st.session_state["memory_query"] = (
-            st.text_input("Search Query")
+        st.session_state["memory_query"] = st.text_input(
+            "Search Query",
+            value=""
             if "memory_query" not in st.session_state
-            else st.text_input(
-                "Search Query ",
-                value=st.session_state["memory_query"],
-            )
+            else st.session_state["memory_query"],
         )
         if (
             st.form_submit_button("Query Memory")
