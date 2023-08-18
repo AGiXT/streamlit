@@ -201,6 +201,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         websearch_depth = 0
         enable_memory = False
         inject_memories_from_collection_number = 0
+        conversation_results = 5
     return {
         "shots": shots,
         "context_results": context_results,
