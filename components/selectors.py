@@ -119,6 +119,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             "websearch_depth",
             "disable_memory",
             "inject_memories_from_collection_number",
+            "conversation_results",
         ]:
             if opt not in prompt:
                 ops = False
@@ -129,6 +130,14 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         "Show Advanced Options", value=ops, key=f"advanced_options_{step_number}"
     )
     if advanced_options:
+        conversation_results = st.number_input(
+            "How many conversation results to inject (Default is 5)",
+            min_value=1,
+            value=5
+            if "conversation_results" not in prompt
+            else int(prompt["conversation_results"]),
+            key=f"conversation_results_{step_number}",
+        )
         shots = st.number_input(
             "Shots (How many times to ask the agent)",
             min_value=1,
@@ -200,6 +209,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         "websearch_depth": websearch_depth,
         "disable_memory": (True if enable_memory == False else False),
         "inject_memories_from_collection_number": inject_memories_from_collection_number,
+        "conversation_results": conversation_results,
     }
 
 
