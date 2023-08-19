@@ -4,6 +4,7 @@ import os
 import logging
 import html
 import re
+from components.docs import predefined_memory_collections
 
 skip_args = [
     "command_list",
@@ -144,6 +145,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             value=1 if "shots" not in prompt else int(prompt["shots"]),
             key=f"shots_{step_number}",
         )
+        predefined_memory_collections()
         inject_memories_from_collection_number = st.number_input(
             "Inject memories from collection number (Default is 0)",
             min_value=0,

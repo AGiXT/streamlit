@@ -3,7 +3,7 @@ import base64
 import streamlit as st
 from components.selectors import agent_selection
 from ApiClient import ApiClient
-from components.docs import agixt_docs
+from components.docs import agixt_docs, predefined_memory_collections
 
 st.set_page_config(
     page_title="Agent Training",
@@ -22,8 +22,9 @@ if agent_name:
     )
     advanced_options = st.checkbox("Show advanced options")
     if advanced_options:
+        predefined_memory_collections()
         collection_number = st.number_input(
-            "Inject memories from collection number (Default is 0)",
+            "Add memories to collection number (Default is 0)",
             min_value=0,
             value=0,
         )
