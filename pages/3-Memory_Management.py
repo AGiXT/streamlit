@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from components.selectors import agent_selection
 from ApiClient import ApiClient
-from components.docs import agixt_docs
+from components.docs import agixt_docs, predefined_memory_collections
 from datetime import datetime
 
 st.set_page_config(
@@ -30,12 +30,12 @@ if agent_name:
         "Advanced Options", value=st.session_state["advanced_options"]
     )
     if st.session_state["advanced_options"]:
+        predefined_memory_collections()
         collection_number = st.number_input(
             "Inject memories from collection number (Default is 0)",
             min_value=0,
             value=0,
         )
-
         limit = st.number_input(
             "Limit (Default is 10)", min_value=1, max_value=100, value=10
         )

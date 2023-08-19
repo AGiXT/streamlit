@@ -24,3 +24,19 @@ def predefined_injection_variables():
 - `{STEPx}` will cause the step `x` response from a chain to be injected. For example, `{STEP1}` will inject the first step's response in a chain.
     """
     )
+
+
+def predefined_memory_collections():
+    st.markdown(
+        """
+## Predefined Memory Collections
+You can use any number above 10 for your own custom collections, but 0-10 are reserved for the following collections:
+| Collection Number | Collection Name |
+| --- | --- |
+| 0 | Default long term memory storage |
+| 1 | Websearch storage |
+| 2 | RLHF - Positive Feedback memory storage |
+| 3 | RLHF - Negative Feedback memory storage |
+| 4-10 | Placeholder - Do not use. |
+        """
+    )
