@@ -32,7 +32,7 @@ if agent_name:
     if st.session_state["advanced_options"]:
         predefined_memory_collections()
         collection_number = st.number_input(
-            "Inject memories from collection number (Default is 0)",
+            "Use collection number (Default is 0)",
             min_value=0,
             value=0,
         )
