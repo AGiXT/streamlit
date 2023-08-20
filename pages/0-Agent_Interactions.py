@@ -1,3 +1,5 @@
+import sounddevice as sd
+import soundfile as sf
 import streamlit as st
 import os
 from components.selectors import (
@@ -9,12 +11,23 @@ from components.selectors import (
 )
 from ApiClient import ApiClient
 from components.docs import agixt_docs, predefined_injection_variables
+import time
 
 st.set_page_config(
     page_title="Agent Interactions",
     page_icon=":speech_balloon:",
     layout="wide",
 )
+
+
+def record_audio(filename="recording.wav", duration=5):
+    samplerate = 44100
+    data = sd.rec(frames=duration * samplerate, samplerate=samplerate, channels=1)
+    sd.wait()
+    sf.write(filename, data=data, samplerate=samplerate)
+    st.success(f"Recording saved as '{filename}'")
+    return filename
+
 
 agixt_docs()
 
@@ -52,6 +65,35 @@ if mode != "Chains":
             )
             if response:
                 st.experimental_rerun()
+    if st.button("Record Audio to Send"):
+        duration = st.slider(
+            "Select recording duration in seconds", min_value=1, max_value=30, value=5
+        )
+        # filename = timestamp_recording.wav
+        filename = f"{str(int(time.time()))}_recording.wav"
+        filename = record_audio(filename=filename, duration=duration)
+        audio_file = open(filename, "rb")
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format="audio/wav")
+        args["conversation_name"] = st.session_state["conversation"]
+        # Need to do API call to convert from audio to text
+        with st.spinner("Translating audio to text, please wait..."):
+            text = ApiClient.execute_command(
+                agent_name=agent_name,
+                command_name="Read Audio from File",
+                command_args={"filename": filename},
+            )
+            st.success(f"Audio translated to text: '{text}'")
+            args["user_input"] = text
+            with st.spinner("Thinking, please wait..."):
+                response = ApiClient.prompt_agent(
+                    agent_name=agent_name,
+                    prompt_name=args["prompt_name"],
+                    prompt_args=args,
+                )
+                if response:
+                    st.experimental_rerun()
+
 
 if mode == "Chains":
     chain_names = ApiClient.get_chains()
