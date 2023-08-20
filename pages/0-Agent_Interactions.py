@@ -21,6 +21,7 @@ st.set_page_config(
 
 
 def record_audio(filename="recording.wav", duration=5):
+    filename = os.path.join(os.getcwd(), "WORKSPACE", filename)
     samplerate = 44100
     data = sd.rec(frames=duration * samplerate, samplerate=samplerate, channels=1)
     sd.wait()
