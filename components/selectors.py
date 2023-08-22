@@ -4,6 +4,7 @@ import os
 import logging
 import html
 import re
+import base64
 from components.docs import predefined_memory_collections
 
 skip_args = [
@@ -85,7 +86,14 @@ def get_history(agent_name, conversation_name):
                         )
 
                     message = f"{item['timestamp']}<br><b>{item['role']}:</b><br>{item['message']}"
-
+                    if "Stable Diffusion image saved to disk as " in item["message"]:
+                        image_path = message.replace(
+                            "Stable Diffusion image saved to disk as ", ""
+                        )
+                        with open(image_path, "rb") as f:
+                            image_content = f.read()
+                        image_content = base64.b64encode(image_content).decode("utf-8")
+                        message = f"{item['timestamp']}<br><b>{item['role']}:</b><br><img src='data:image/png;base64,{image_content}'>"
                     if agent_name in item["role"]:
                         message_container += (
                             f"<div class='message agent-message'>{message}</div>"
