@@ -1,8 +1,4 @@
-import sounddevice as sd
-import soundfile as sf
-from playsound import playsound
 import streamlit as st
-import gtts as ts
 import os
 from components.selectors import (
     agent_selection,
@@ -22,24 +18,6 @@ st.set_page_config(
 )
 
 
-def record_audio(filename="recording.wav", duration=5):
-    filename = os.path.join(os.getcwd(), "WORKSPACE", filename)
-    samplerate = 44100
-    data = sd.rec(frames=duration * samplerate, samplerate=samplerate, channels=1)
-    sd.wait()
-    sf.write(filename, data=data, samplerate=samplerate)
-    st.success(f"Recording saved as '{filename}'")
-    return filename
-
-
-def speak_with_gtts(text: str) -> bool:
-    tts = ts.gTTS(text)
-    tts.save("speech.mp3")
-    playsound("speech.mp3", True)
-    os.remove("speech.mp3")
-    return text
-
-
 agixt_docs()
 
 st.header("Agent Interactions")
@@ -57,15 +35,6 @@ mode = st.selectbox(
 )
 
 agent_name = agent_selection() if mode != "Chains" else ""
-tts = st.checkbox("Use Text to Speech") if DEV_MODE else False
-if tts:
-    duration = st.slider(
-        "Select recording duration in seconds", min_value=1, max_value=30, value=5
-    )
-    st.session_state["auto_read"] = st.checkbox(
-        "Automatically Read Response with Text to Speech"
-    )
-    record_stt = st.button("Record Speech to Text")
 
 if mode == "Chat" or mode == "Instruct":
     args = prompt_options()
@@ -142,29 +111,3 @@ if mode == "Chains":
             else:
                 st.error("Chain name is required.")
 
-if tts:
-    if record_stt:
-        filename = f"{str(int(time.time()))}_recording.wav"
-        filename = record_audio(filename=filename, duration=duration)
-        audio_file = open(filename, "rb")
-        audio_bytes = audio_file.read()
-        st.audio(audio_bytes, format="audio/wav")
-        args["conversation_name"] = st.session_state["conversation"]
-        # Need to do API call to convert from audio to text
-        with st.spinner("Translating audio to text, please wait..."):
-            text = ApiClient.execute_command(
-                agent_name=agent_name,
-                command_name="Read Audio from File",
-                command_args={"filename": filename},
-                conversation_name=args["conversation_name"],
-            )
-            st.success(f"Audio translated to text: '{text}'")
-            args["user_input"] = text
-            with st.spinner("Thinking, please wait..."):
-                response = ApiClient.prompt_agent(
-                    agent_name=agent_name,
-                    prompt_name=args["prompt_name"],
-                    prompt_args=args,
-                )
-                if response:
-                    st.experimental_rerun()
