@@ -4,3 +4,5 @@ python-dotenv==1.0.0
 urllib3==1.26.16
 sounddevice
 soundfile
+playsound
+gtts

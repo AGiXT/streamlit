@@ -1,6 +1,8 @@
 import sounddevice as sd
 import soundfile as sf
+from playsound import playsound
 import streamlit as st
+import gtts as ts
 import os
 from components.selectors import (
     agent_selection,
@@ -9,7 +11,7 @@ from components.selectors import (
     prompt_options,
     prompt_selection,
 )
-from ApiClient import ApiClient
+from ApiClient import ApiClient, DEV_MODE
 from components.docs import agixt_docs, predefined_injection_variables
 import time
 
@@ -30,6 +32,14 @@ def record_audio(filename="recording.wav", duration=5):
     return filename
 
 
+def speak_with_gtts(text: str) -> bool:
+    tts = ts.gTTS(text)
+    tts.save("speech.mp3")
+    playsound("speech.mp3", True)
+    os.remove("speech.mp3")
+    return text
+
+
 agixt_docs()
 
 st.header("Agent Interactions")
@@ -47,7 +57,7 @@ mode = st.selectbox(
 )
 
 agent_name = agent_selection() if mode != "Chains" else ""
-tts = st.checkbox("Use Text to Speech")
+tts = st.checkbox("Use Text to Speech") if DEV_MODE else False
 if tts:
     duration = st.slider(
         "Select recording duration in seconds", min_value=1, max_value=30, value=5
