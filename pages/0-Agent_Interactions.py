@@ -83,6 +83,7 @@ if mode != "Chains":
                 agent_name=agent_name,
                 command_name="Read Audio from File",
                 command_args={"filename": filename},
+                conversation_name=args["conversation_name"],
             )
             st.success(f"Audio translated to text: '{text}'")
             args["user_input"] = text
