@@ -88,6 +88,10 @@ if agent_name:
                     st.markdown(f"**Created on** {memory['timestamp']}")
                 st.markdown(f"**Relevance Score:** {memory['relevance_score']}")
                 st.markdown(f"**Memory ID:** `{memory['id']}`")
+                if "external_source_name" in memory:
+                    st.markdown(
+                        f"**Memory Source:** `{memory['external_source_name']}`"
+                    )
                 st.markdown(f"**Memory:**")
                 st.markdown(f"```{memory['additional_metadata']}```")
                 if st.form_submit_button("Delete Memory"):
