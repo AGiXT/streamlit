@@ -87,7 +87,9 @@ def get_history(agent_name, conversation_name):
 
                     message = f"{item['timestamp']}<br><b>{item['role']}:</b><br>{item['message']}"
                     if "#GENERATED_IMAGE:" in item["message"]:
-                        image_content = message.replace("#GENERATED_IMAGE:", "")
+                        image_content = message.replace(
+                            "#GENERATED_IMAGE:", ""
+                        ).replace("GENERATED_IMAGE:", "")
                         image_content = base64.b64encode(image_content).decode("utf-8")
                         message = f"{item['timestamp']}<br><b>{item['role']}:</b><br><img src='data:image/png;base64,{image_content}'>"
                     if agent_name in item["role"]:
