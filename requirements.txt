@@ -1,5 +1,5 @@
 streamlit==1.25.0
-agixtsdk==0.0.26
+agixtsdk==0.0.28
 python-dotenv==1.0.0
 urllib3==1.26.16
 sounddevice

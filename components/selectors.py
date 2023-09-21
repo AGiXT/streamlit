@@ -402,6 +402,7 @@ def conversation_selection(agent_name):
                 ApiClient.new_conversation(
                     agent_name=agent_name if agent_name else "OpenAI",
                     conversation_name=conversation_name,
+                    conversation_content=[],
                 )
                 with open(os.path.join("conversation.txt"), "w") as f:
                     f.write(conversation_name)
