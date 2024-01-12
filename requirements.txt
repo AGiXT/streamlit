@@ -1,4 +1,4 @@
-streamlit==1.25.0
+streamlit==1.30.0
 agixtsdk==0.0.28
 python-dotenv==1.0.0
 urllib3==1.26.18
