@@ -40,7 +40,7 @@ if agent_name == "":
         )
         with open("./session.txt", "w") as f:
             f.write("OpenAI")
-        st.experimental_rerun()
+        st.rerun()
 else:
     try:
         with open("./.streamlit/config.toml") as f:

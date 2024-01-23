@@ -107,4 +107,4 @@ if agent_name:
                         min_relevance_score=min_relevance_score,
                         collection_number=collection_number,
                     )
-                    st.experimental_rerun()
+                    st.rerun()

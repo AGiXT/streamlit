@@ -53,7 +53,7 @@ if mode != "Chains":
                 prompt_args=args,
             )
             if response:
-                st.experimental_rerun()
+                st.rerun()
 
 if mode == "Chains":
     chain_names = ApiClient.get_chains()
@@ -110,4 +110,3 @@ if mode == "Chains":
                 st.write(responses)
             else:
                 st.error("Chain name is required.")
-

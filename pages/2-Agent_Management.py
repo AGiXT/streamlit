@@ -147,7 +147,7 @@ if not agent_name:
                 with open(os.path.join("session.txt"), "w") as f:
                     f.write(agent_name)
                 st.session_state["new_agent_name"] = agent_name
-                st.experimental_rerun()  # Rerun the app to update the agent list
+                st.rerun()  # Rerun the app to update the agent list
             except Exception as e:
                 st.error(f"Error adding agent: {str(e)}")
         else:
@@ -276,7 +276,7 @@ if agent_name and not new_agent:
                     ApiClient.delete_agent(agent_name=agent_name)
                     st.success(f"Agent '{agent_name}' deleted.")
                     st.session_state["new_agent_name"] = ""  # Reset the selected agent
-                    st.experimental_rerun()  # Rerun the app to update the agent list
+                    st.rerun()  # Rerun the app to update the agent list
                 except Exception as e:
                     st.error(f"Error deleting agent: {str(e)}")
     except Exception as e:

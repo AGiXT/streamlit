@@ -36,7 +36,7 @@ def add_new_step(chain_name, step_number, agents):
                 prompt=prompt,
             )
             st.success(f"Step added to chain '{chain_name}'.")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("All fields are required.")
 
@@ -85,7 +85,7 @@ def modify_step(chain_name, step, agents):
                 prompt=prompt,
             )
             st.success(f"Step modified in chain '{chain_name}'.")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("All fields are required.")
 

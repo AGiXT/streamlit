@@ -357,7 +357,7 @@ def agent_selection(key: str = "select_learning_agent", heading: str = "Agent Na
             with open(os.path.join("session.txt"), "w") as f:
                 f.write(selected_agent)
             try:
-                st.experimental_rerun()
+                st.rerun()
             except Exception as e:
                 logging.info(e)
     return selected_agent
@@ -426,7 +426,7 @@ def conversation_selection(agent_name):
                 with open(os.path.join("conversation.txt"), "w") as f:
                     f.write("")
                 st.success("Conversation history deleted successfully.")
-                st.experimental_rerun()
+                st.rerun()
             chat_history = get_history(
                 agent_name=agent_name, conversation_name=conversation_name
             )
@@ -434,5 +434,5 @@ def conversation_selection(agent_name):
     if conversation != conversation_name:
         with open(os.path.join("conversation.txt"), "w") as f:
             f.write(conversation_name)
-        st.experimental_rerun()
+        st.rerun()
     return conversation_name

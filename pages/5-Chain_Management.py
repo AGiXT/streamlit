@@ -40,7 +40,7 @@ if chain_action == "Create Chain":
         if chain_name:
             ApiClient.add_chain(chain_name=chain_name)
             st.success(f"Chain '{chain_name}' created.")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Chain name is required.")
 
@@ -50,7 +50,7 @@ elif chain_action == "Delete Chain":
         if chain_name:
             ApiClient.delete_chain(chain_name=chain_name)
             st.success(f"Chain '{chain_name}' deleted.")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Chain name is required.")
 
