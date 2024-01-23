@@ -123,7 +123,7 @@ if (
 if not agent_name:
     agent_file = st.file_uploader("Import Agent", type=["json"])
     if agent_file:
-        agent_name = agent_file.name.split(".")[0]
+        agent_name = agent_file.name.split(".json")[0]
         agent_settings = agent_file.read().decode("utf-8")
         agent_config = json.loads(agent_settings)
         ApiClient.import_agent(
