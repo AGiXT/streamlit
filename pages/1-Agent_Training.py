@@ -18,7 +18,7 @@ agent_name = agent_selection()
 if agent_name:
     mode = st.selectbox(
         "Select Training Source",
-        ["Website", "File", "Text", "GitHub Repository"],
+        ["Website", "File", "Text", "GitHub Repository", "arXiv"],
     )
     advanced_options = st.checkbox("Show advanced options")
     if advanced_options:
@@ -160,3 +160,48 @@ if agent_name:
                 st.success(
                     f"Agent '{agent_name}' has learned from the GitHub repository {github_repo}."
                 )
+
+    elif mode == "arXiv":
+        st.markdown("### Train from arXiv")
+        st.markdown(
+            "The agent will download PDFs from arXiv based on the query you provide into its long term memory."
+        )
+        use_arxiv_ids = st.checkbox("Use arXiv IDs instead of a query", value=False)
+        if use_arxiv_ids:
+            arxiv_ids = st.text_area(
+                "Enter arXiv IDs for the agent to learn from.. (Comma separated IDs)"
+            )
+            if st.button("Train from arXiv IDs"):
+                if arxiv_ids:
+                    with st.spinner(
+                        f"Training {agent_name}, please wait... This can take some time depending on the size of the repository."
+                    ):
+                        arxiv_ids = arxiv_ids.replace("\n", ",")
+                        arxiv_ids = arxiv_ids.replace(" ", "")
+                        learn = ApiClient.learn_arxiv(
+                            agent_name=agent_name,
+                            arxiv_id=arxiv_ids,
+                            collection_number=collection_number,
+                        )
+                        st.success(
+                            f"Agent '{agent_name}' has learned from the arXiv ID: {arxiv_ids}."
+                        )
+        else:
+            query = st.text_input(
+                "Enter a query for the agent to learn from.. For example, 'machine learning'"
+            )
+            max_results = st.number_input(
+                "Enter the maximum number of results to return (Default is 5)",
+                min_value=1,
+                value=5,
+            )
+            if st.button("Train from arXiv"):
+                with st.spinner(
+                    f"Training {agent_name}, please wait... This can take some time.."
+                ):
+                    learn = ApiClient.learn_arxiv(
+                        agent_name=agent_name,
+                        query=query,
+                        max_results=max_results,
+                        collection_number=collection_number,
+                    )
