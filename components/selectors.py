@@ -139,9 +139,11 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         conversation_results = st.number_input(
             "How many conversation results to inject (Default is 5)",
             min_value=1,
-            value=5
-            if "conversation_results" not in prompt
-            else int(prompt["conversation_results"]),
+            value=(
+                5
+                if "conversation_results" not in prompt
+                else int(prompt["conversation_results"])
+            ),
             key=f"conversation_results_{step_number}",
         )
         shots = st.number_input(
@@ -154,17 +156,19 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         inject_memories_from_collection_number = st.number_input(
             "Inject memories from collection number (Default is 0)",
             min_value=0,
-            value=0
-            if "inject_memories_from_collection_number" not in prompt
-            else int(prompt["inject_memories_from_collection_number"]),
+            value=(
+                0
+                if "inject_memories_from_collection_number" not in prompt
+                else int(prompt["inject_memories_from_collection_number"])
+            ),
             key=f"inject_memories_from_collection_number_{step_number}",
         )
         context_results = st.number_input(
             "How many long term memories to inject (Default is 5)",
             min_value=1,
-            value=5
-            if "context_results" not in prompt
-            else int(prompt["context_results"]),
+            value=(
+                5 if "context_results" not in prompt else int(prompt["context_results"])
+            ),
             key=f"context_results_{step_number}",
         )
         browse_links = st.checkbox(
@@ -181,9 +185,11 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             websearch_depth = st.number_input(
                 "Websearch depth",
                 min_value=1,
-                value=3
-                if "websearch_depth" not in prompt
-                else int(prompt["websearch_depth"]),
+                value=(
+                    3
+                    if "websearch_depth" not in prompt
+                    else int(prompt["websearch_depth"])
+                ),
                 key=f"websearch_depth_{step_number}",
             )
         else:
@@ -237,9 +243,11 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
     prompt_name = st.selectbox(
         "Select Custom Prompt",
         available_prompts,
-        index=available_prompts.index(prompt.get("prompt_name", ""))
-        if "prompt_name" in prompt
-        else custom_input_index,
+        index=(
+            available_prompts.index(prompt.get("prompt_name", ""))
+            if "prompt_name" in prompt
+            else custom_input_index
+        ),
         key=f"step_{step_number}_prompt_name",
     )
     prompt_content = ApiClient.get_prompt(
@@ -279,9 +287,11 @@ def command_selection(prompt: dict = {}, step_number: int = 0):
         "Select Command",
         [""] + available_commands,
         key=f"command_name_{step_number}",
-        index=available_commands.index(prompt.get("command_name", "")) + 1
-        if "command_name" in prompt
-        else 0,
+        index=(
+            available_commands.index(prompt.get("command_name", "")) + 1
+            if "command_name" in prompt
+            else 0
+        ),
     )
 
     if command_name:
@@ -414,9 +424,11 @@ def conversation_selection(agent_name):
             conversation_name = st.selectbox(
                 "Choose a conversation",
                 conversations,
-                index=conversations.index(conversation)
-                if conversation in conversations
-                else 0,
+                index=(
+                    conversations.index(conversation)
+                    if conversation in conversations
+                    else 0
+                ),
             )
             if st.button("Delete Conversation"):
                 ApiClient.delete_conversation(
