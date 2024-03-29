@@ -192,8 +192,7 @@ if agent_name and not new_agent:
                         if "prompt_category" in agent_settings
                         else "Default"
                     ),
-                },
-                key="prompt_ops",
+                }
             )
             agent_settings["prompt_name"] = prompt_ops["prompt_name"]
             agent_settings["prompt_category"] = prompt_ops["prompt_category"]
