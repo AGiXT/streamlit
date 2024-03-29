@@ -275,18 +275,6 @@ if agent_name and not new_agent:
                 key="select_helper_agent",
                 heading="Select Helper Agent (Your agent will ask this one for help when it needs something.)",
             )
-
-            embedder_name = agent_settings.get("embedder", "default")
-            embedder_name = st.selectbox(
-                "Select Embedder",
-                embedders,
-                index=(
-                    embedders.index(embedder_name) if embedder_name in embedders else 0
-                ),
-            )
-            agent_settings["embedder"] = (
-                embedder_name  # Update the agent_settings with the selected embedder
-            )
             if "WEBSEARCH_TIMEOUT" not in agent_settings:
                 agent_settings["WEBSEARCH_TIMEOUT"] = 0
             websearch_timeout = st.number_input(
