@@ -56,9 +56,11 @@ def modify_step(chain_name, step, agents):
     modify_agent_name = st.selectbox(
         "Select Agent",
         options=[""] + [agent["name"] for agent in agents],
-        index=([agent["name"] for agent in agents].index(agent_name) + 1)
-        if agent_name in [agent["name"] for agent in agents]
-        else 0,
+        index=(
+            ([agent["name"] for agent in agents].index(agent_name) + 1)
+            if agent_name in [agent["name"] for agent in agents]
+            else 0
+        ),
         key=f"agent_name_{step_number}",
     )
     modify_prompt_type = st.selectbox(

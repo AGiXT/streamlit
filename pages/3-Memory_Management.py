@@ -53,9 +53,11 @@ if agent_name:
     with st.form(key="query_memory_form"):
         st.session_state["memory_query"] = st.text_input(
             "Search Query",
-            value=""
-            if "memory_query" not in st.session_state
-            else st.session_state["memory_query"],
+            value=(
+                ""
+                if "memory_query" not in st.session_state
+                else st.session_state["memory_query"]
+            ),
         )
         if (
             st.form_submit_button("Query Memory")

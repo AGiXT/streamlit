@@ -2,7 +2,13 @@ import os
 import json
 import streamlit as st
 from ApiClient import ApiClient
-from components.selectors import agent_selection, helper_agent_selection
+from components.selectors import (
+    agent_selection,
+    helper_agent_selection,
+    prompt_selection,
+    command_selection,
+    chain_selection,
+)
 from components.docs import agixt_docs
 
 st.set_page_config(
@@ -164,16 +170,92 @@ if agent_name and not new_agent:
             mime="application/json",
         )
         agent_settings = agent_config.get("settings", {})
+        if "mode" not in agent_settings:
+            agent_settings["mode"] = "prompt"
+        mode = st.selectbox(
+            "Select Agent Chat Completions Mode",
+            ["prompt", "command", "chain"],
+            index=["prompt", "command", "chain"].index(agent_settings["mode"]),
+            key="mode",
+        )
+        agent_settings["mode"] = mode
+        if mode == "prompt":
+            prompt_ops = prompt_selection(
+                prompt={
+                    "prompt_name": (
+                        agent_settings["prompt_name"]
+                        if "prompt_name" in agent_settings
+                        else "Chat"
+                    ),
+                    "prompt_category": (
+                        agent_settings["prompt_category"]
+                        if "prompt_category" in agent_settings
+                        else "Default"
+                    ),
+                },
+                key="prompt_ops",
+            )
+            agent_settings["prompt_name"] = prompt_ops["prompt_name"]
+            agent_settings["prompt_category"] = prompt_ops["prompt_category"]
+            agent_settings["prompt_args"] = prompt_ops
+        elif mode == "command":
+            command_ops = command_selection(
+                prompt={
+                    "command_name": (
+                        agent_settings["command_name"]
+                        if "command_name" in agent_settings
+                        else "Get Datetime"
+                    ),
+                    "command_args": (
+                        agent_settings["command_args"]
+                        if "command_args" in agent_settings
+                        else {}
+                    ),
+                }
+            )
+            agent_settings["command_name"] = command_ops["command_name"]
+            agent_settings["command_args"] = command_ops["command_args"]
+            if "command_variable" not in agent_settings:
+                agent_settings["command_variable"] = ""
+            command_variable = st.selectbox(
+                "Select Command Variable",
+                [""] + list(agent_settings["command_args"].keys()),
+                index=(
+                    list(agent_settings["command_args"].keys()).index(
+                        agent_settings["command_variable"]
+                    )
+                    + 1
+                    if agent_settings["command_variable"]
+                    in agent_settings["command_args"]
+                    else 0
+                ),
+                key="command_variable",
+            )
+            agent_settings["command_variable"] = command_variable
+        elif mode == "chain":
+            chain_ops = chain_selection(
+                prompt={
+                    "chain_name": (
+                        agent_settings["chain_name"]
+                        if "chain_name" in agent_settings
+                        else "Default Chain"
+                    ),
+                    "chain_args": (
+                        agent_settings["chain_args"]
+                        if "chain_args" in agent_settings
+                        else {}
+                    ),
+                }
+            )
+            agent_settings["chain_name"] = chain_ops["chain"]
+            agent_settings["chain_args"] = chain_ops
         provider_name = agent_settings.get("provider", "")
         provider_name = st.selectbox(
             "Select Provider",
             providers,
             index=providers.index(provider_name) if provider_name in providers else 0,
         )
-
-        agent_settings[
-            "provider"
-        ] = provider_name  # Update the agent_settings with the selected provider
+        agent_settings["provider"] = provider_name
         with st.form(key="update_agent_settings_form"):
             st.subheader("Agent Settings")
             if "AUTONOMOUS_EXECUTION" not in agent_settings:
@@ -193,18 +275,6 @@ if agent_name and not new_agent:
                 key="select_helper_agent",
                 heading="Select Helper Agent (Your agent will ask this one for help when it needs something.)",
             )
-
-            embedder_name = agent_settings.get("embedder", "default")
-            embedder_name = st.selectbox(
-                "Select Embedder",
-                embedders,
-                index=embedders.index(embedder_name)
-                if embedder_name in embedders
-                else 0,
-            )
-            agent_settings[
-                "embedder"
-            ] = embedder_name  # Update the agent_settings with the selected embedder
             if "WEBSEARCH_TIMEOUT" not in agent_settings:
                 agent_settings["WEBSEARCH_TIMEOUT"] = 0
             websearch_timeout = st.number_input(
