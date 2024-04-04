@@ -89,6 +89,32 @@ def render_provider_settings(agent_settings, provider_name: str):
         required_settings = provider_settings(provider_name=provider_name)
         # remove "provider" from required settings
         required_settings.pop("provider")
+        # Get the values of the tts, image, embeddings, transcription, translation, and vision providers
+        tts_provider = agent_settings.get("tts_provider", "default")
+        image_provider = agent_settings.get("image_provider", "default")
+        embeddings_provider = agent_settings.get("embeddings_provider", "default")
+        transcription_provider = agent_settings.get("transcription_provider", "default")
+        translation_provider = agent_settings.get("translation_provider", "default")
+        vision_provider = agent_settings.get("vision_provider", "default")
+        tts_settings = provider_settings(provider_name=tts_provider)
+        tts_settings.pop("provider")
+        image_settings = provider_settings(provider_name=image_provider)
+        image_settings.pop("provider")
+        embeddings_settings = provider_settings(provider_name=embeddings_provider)
+        embeddings_settings.pop("provider")
+        transcription_settings = provider_settings(provider_name=transcription_provider)
+        transcription_settings.pop("provider")
+        translation_settings = provider_settings(provider_name=translation_provider)
+        translation_settings.pop("provider")
+        vision_settings = provider_settings(provider_name=vision_provider)
+        vision_settings.pop("provider")
+        required_settings.update(tts_settings)
+        required_settings.update(image_settings)
+        required_settings.update(embeddings_settings)
+        required_settings.update(transcription_settings)
+        required_settings.update(translation_settings)
+        required_settings.update(vision_settings)
+
     except (TypeError, ValueError):
         st.error(
             f"Error loading provider settings: expected a list or a dictionary, but got {required_settings}"
