@@ -352,18 +352,8 @@ if agent_name and not new_agent:
         ),
     )
     agent_settings["translation_provider"] = translation_provider
-    image_provider = agent_settings.get("image_provider", "default")
-    image_provider = st.selectbox(
-        "Select Image Provider",
-        image_providers,
-        index=(
-            image_providers.index(image_provider)
-            if image_provider in image_providers
-            else 0
-        ),
-    )
-    agent_settings["image_provider"] = image_provider
-    vision_provider = agent_settings.get("vision_provider", "default")
+    vision_provider = agent_settings.get("vision_provider", "None")
+    vision_providers = ["None"] + vision_providers
     vision_provider = st.selectbox(
         "Select Vision Provider",
         vision_providers,
@@ -374,6 +364,19 @@ if agent_name and not new_agent:
         ),
     )
     agent_settings["vision_provider"] = vision_provider
+    image_provider = agent_settings.get("image_provider", "None")
+    image_providers = ["None"] + image_providers
+    image_provider = st.selectbox(
+        "Select Image Generation Provider",
+        image_providers,
+        index=(
+            image_providers.index(image_provider)
+            if image_provider in image_providers
+            else 0
+        ),
+    )
+    agent_settings["image_provider"] = image_provider
+
     with st.form(key="update_agent_settings_form"):
         st.subheader("Agent Settings")
         if "AUTONOMOUS_EXECUTION" not in agent_settings:
