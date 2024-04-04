@@ -1,7 +1,7 @@
-streamlit==1.30.0
-agixtsdk==0.0.28
+streamlit
+agixtsdk==0.0.34
 python-dotenv==1.0.0
-urllib3==2.1.0
+urllib3==2.2.1
 sounddevice
 soundfile
 gtts
