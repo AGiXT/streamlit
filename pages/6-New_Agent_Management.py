@@ -1,6 +1,7 @@
 import streamlit as st
 from ApiClient import ApiClient as sdk
 from components.selectors import (
+    helper_agent_selection,
     prompt_selection,
     command_selection,
     chain_selection,
@@ -8,13 +9,13 @@ from components.selectors import (
 from components.docs import agixt_docs
 
 st.set_page_config(
-    page_title="Agent Builder",
+    page_title="New Agent Management",
     page_icon=":hammer_and_wrench:",
     layout="wide",
 )
 agixt_docs()
 
-st.title("AGiXT Agent Builder")
+st.title("New Agent Management")
 
 
 def render_provider_settings(provider_name, agent_settings, provider_settings):
@@ -148,27 +149,6 @@ if agent_name:
     col3, col4 = st.columns(2)
 
     with col3:
-        st.subheader("Web Search (Optional)")
-        enable_websearch = st.checkbox(
-            "Enable web search", value=agent_settings.get("WEBSEARCH_ENABLED", False)
-        )
-        if enable_websearch:
-            websearch_depth = st.number_input(
-                "Set web search depth:",
-                min_value=0,
-                value=int(agent_settings.get("WEBSEARCH_DEPTH", 0)),
-                step=1,
-            )
-        else:
-            websearch_depth = 0
-
-        st.subheader("Helper Agent (Optional)")
-        helper_agent = st.text_input(
-            "Enter helper agent name:",
-            value=agent_settings.get("helper_agent_name", ""),
-        )
-
-    with col4:
         st.subheader("Extensions")
         extensions = sdk.get_extensions()
         extension_options = [extension["extension_name"] for extension in extensions]
@@ -205,6 +185,13 @@ if agent_name:
                     if command_enabled:
                         selected_commands.append(command["friendly_name"])
 
+    with col4:
+        st.subheader("Helper Agent (Optional)")
+        helper_agent = helper_agent_selection(
+            current_agent=agent_name,
+            key="select_helper_agent",
+            heading="Select Helper Agent (Your agent may ask the selected one for help when it needs something.)",
+        )
     st.header("Configure Chat Completions Mode")
     chat_completions_mode = st.selectbox(
         "Select chat completions mode:",
@@ -255,8 +242,6 @@ if agent_name:
             "image_provider": (
                 selected_image_provider if selected_image_provider != "None" else None
             ),
-            "WEBSEARCH_ENABLED": enable_websearch,
-            "WEBSEARCH_DEPTH": websearch_depth,
             "helper_agent_name": helper_agent,
             "extensions": selected_extensions,
             **extension_settings,
