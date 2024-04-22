@@ -448,3 +448,22 @@ def conversation_selection(agent_name):
             f.write(conversation_name)
         st.rerun()
     return conversation_name
+
+
+def render_provider_settings(provider_name, existing_settings=None, key_prefix=""):
+    if existing_settings is None:
+        existing_settings = {}
+
+    settings = ApiClient.get_provider_settings(provider_name=provider_name)
+    rendered_settings = {}
+
+    for key, value in settings.items():
+        if key != "provider":
+            if key in existing_settings:
+                rendered_settings[key] = existing_settings[key]
+            else:
+                rendered_settings[key] = st.text_input(
+                    f"{key}:", value=value, key=f"{key_prefix}_{provider_name}_{key}"
+                )
+
+    return rendered_settings
