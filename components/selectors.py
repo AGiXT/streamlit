@@ -105,7 +105,15 @@ def get_history(agent_name, conversation_name):
         st.write(message_container, unsafe_allow_html=True)
 
 
-def build_args(args: dict = {}, prompt: dict = {}, step_number: int = 0):
+def build_args(
+    args: dict = {},
+    prompt: dict = {},
+    step_number: int = 0,
+    show_user_input: bool = True,
+):
+    if not show_user_input:
+        skip_args.append("user_input")
+        skip_args.append("input")
     return {
         arg: st.text_area(arg, value=prompt.get(arg, ""), key=f"{arg}_{step_number}")
         for arg in args
@@ -227,7 +235,9 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
     }
 
 
-def prompt_selection(prompt: dict = {}, step_number: int = 0):
+def prompt_selection(
+    prompt: dict = {}, step_number: int = 0, show_user_input: bool = True
+):
     prompt_categories = ApiClient.get_prompt_categories()
     prompt_category = st.selectbox(
         "Select Prompt Category",
@@ -253,6 +263,7 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
     prompt_content = ApiClient.get_prompt(
         prompt_name=prompt_name, prompt_category=prompt_category
     )
+    prompt_content = prompt_content.replace("```", "` ` `")
     st.markdown(
         f"""
 **Prompt Content**
@@ -266,7 +277,12 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         prompt_args = ApiClient.get_prompt_args(
             prompt_name=prompt_name, prompt_category=prompt_category
         )
-        args = build_args(args=prompt_args, prompt=prompt, step_number=step_number)
+        args = build_args(
+            args=prompt_args,
+            prompt=prompt,
+            step_number=step_number,
+            show_user_input=show_user_input,
+        )
         new_prompt = {
             "prompt_name": prompt_name,
             "prompt_category": prompt_category,
@@ -276,7 +292,9 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         return new_prompt
 
 
-def command_selection(prompt: dict = {}, step_number: int = 0):
+def command_selection(
+    prompt: dict = {}, step_number: int = 0, show_user_input: bool = True
+):
     agent_commands = cached_get_extensions()
     available_commands = []
     for commands in agent_commands:
@@ -296,7 +314,12 @@ def command_selection(prompt: dict = {}, step_number: int = 0):
 
     if command_name:
         command_args = ApiClient.get_command_args(command_name=command_name)
-        args = build_args(args=command_args, prompt=prompt, step_number=step_number)
+        args = build_args(
+            args=command_args,
+            prompt=prompt,
+            step_number=step_number,
+            show_user_input=show_user_input,
+        )
         new_prompt = {
             "command_name": command_name,
             "command_args": args,
@@ -304,7 +327,9 @@ def command_selection(prompt: dict = {}, step_number: int = 0):
         return new_prompt
 
 
-def chain_selection(prompt: dict = {}, step_number: int = 0):
+def chain_selection(
+    prompt: dict = {}, step_number: int = 0, show_user_input: bool = True
+):
     available_chains = ApiClient.get_chains()
     chain_name = st.selectbox(
         "Select Chain",
@@ -312,11 +337,12 @@ def chain_selection(prompt: dict = {}, step_number: int = 0):
         index=available_chains.index(prompt["chain"]) if "chain" in prompt else 0,
         key=f"step_{step_number}_chain_name",
     )
-    user_input = st.text_area(
-        "User Input",
-        value=prompt.get("input", ""),
-        key=f"user_input_{step_number}",
-    )
+    if show_user_input:
+        user_input = st.text_area(
+            "User Input",
+            value=prompt.get("input", ""),
+            key=f"user_input_{step_number}",
+        )
     args = {}
     if chain_name:
         chain_args = ApiClient.get_chain_args(chain_name=chain_name)
@@ -326,7 +352,8 @@ def chain_selection(prompt: dict = {}, step_number: int = 0):
                 if override_arg:
                     args[arg] = st.text_area(arg)
         args["chain"] = chain_name
-        args["input"] = user_input
+        if show_user_input:
+            args["input"] = user_input
     if args != {}:
         args_copy = args.copy()
         for arg in args_copy:
