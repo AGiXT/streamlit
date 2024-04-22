@@ -214,16 +214,38 @@ if agent_name:
         ),
     )
 
+    command_variable = ""
     if chat_completions_mode == "prompt":
-        prompt_settings = prompt_selection(prompt=agent_settings.get("prompt_args", {}))
+        prompt_settings = prompt_selection(
+            prompt=agent_settings.get("prompt_args", {}), show_user_input=False
+        )
 
     if chat_completions_mode == "chain":
-        chain_settings = chain_selection(prompt=agent_settings.get("chain_args", {}))
+        chain_settings = chain_selection(
+            prompt=agent_settings.get("chain_args", {}), show_user_input=False
+        )
 
     if chat_completions_mode == "command":
         command_settings = command_selection(
-            prompt=agent_settings.get("command_args", {})
+            prompt=agent_settings.get("command_args", {}), show_user_input=False
         )
+        if command_settings and "command_args" in command_settings:
+            command_variable = st.selectbox(
+                "Select Command Variable",
+                [""] + list(command_settings["command_args"].keys()),
+                index=(
+                    list(command_settings["command_args"].keys()).index(
+                        agent_settings.get("command_variable", "")
+                    )
+                    + 1
+                    if agent_settings.get("command_variable", "")
+                    in command_settings["command_args"]
+                    else 0
+                ),
+                key="command_variable",
+            )
+        else:
+            command_variable = ""
 
     if st.button("Perform Action"):
         settings = {
@@ -253,6 +275,7 @@ if agent_name:
 
         if chat_completions_mode == "command":
             settings.update(command_settings)
+            settings["command_variable"] = command_variable
 
         commands = {command: True for command in selected_commands}
 
