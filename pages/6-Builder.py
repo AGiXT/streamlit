@@ -216,18 +216,14 @@ if agent_name:
 
     command_variable = ""
     if chat_completions_mode == "prompt":
-        prompt_settings = prompt_selection(
-            prompt=agent_settings.get("prompt_args", {}), show_user_input=False
-        )
+        prompt_settings = prompt_selection(prompt=agent_settings, show_user_input=False)
 
     if chat_completions_mode == "chain":
-        chain_settings = chain_selection(
-            prompt=agent_settings.get("chain_args", {}), show_user_input=False
-        )
+        chain_settings = chain_selection(prompt=agent_settings, show_user_input=False)
 
     if chat_completions_mode == "command":
         command_settings = command_selection(
-            prompt=agent_settings.get("command_args", {}), show_user_input=False
+            prompt=agent_settings, show_user_input=False
         )
         if command_settings and "command_args" in command_settings:
             command_variable = st.selectbox(
@@ -247,7 +243,7 @@ if agent_name:
         else:
             command_variable = ""
 
-    if st.button("Perform Action"):
+    if st.button("Save Agent Settings"):
         settings = {
             "provider": selected_language_provider,
             **provider_settings,
