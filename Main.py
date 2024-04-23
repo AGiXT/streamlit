@@ -17,15 +17,15 @@ st.set_page_config(
 )
 
 def check_server_conf():
-    
-    server_response = requests.get(f"https://127.0.0.1")
+    global base_uri
+    server_response.status_code = 401
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
       data = json.load(f)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
-    elif {base_uri}:
+    elif base_uri:
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
-    return server_response.statuscode
+    return server_response.status_code
   
 if check_server_conf() != 200:
     # Show API config
