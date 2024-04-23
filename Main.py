@@ -33,6 +33,7 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
       print("Server Config Found")
       f = open("server_conf.json")
       data = json.load(f)
+      st.warning(data)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
 
     try:
