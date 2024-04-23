@@ -17,10 +17,21 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-load_dotenv()
-base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
-api_key = os.getenv("AGIXT_API_KEY", "")
+if os.path.isfile("server_conf.json") == False:
+   load_dotenv()
+    base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
+    api_key = os.getenv("AGIXT_API_KEY", "")
+else
+    load_env
     
+def load_env():
+    f = open("server_conf.json")
+    data = json.load(f)
+    st.warning(data['SERVER_URI'])
+    base_uri = data['SERVER_URI']
+    if base_uri[-1] == "/": base_uri=base_uri[:-1]
+    api_key = data['API_KEY']
+
 def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
     st.warning("Base Uri: " + base_uri)
     st.warning("API Key: " + api_key)
@@ -31,11 +42,7 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
     elif os.path.isfile("server_conf.json") == True:
       print("Server Config Found")
-      f = open("server_conf.json")
-      data = json.load(f)
-      st.warning(data['SERVER_URI'])
-      base_uri = data['SERVER_URI']
-      if base_uri[-1] == "/": base_uri=data['SERVER_URI'][:-1]
+      load_env()
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": data['API_KEY']})
 
     try:
