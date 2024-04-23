@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 def check_server_conf():
-    if os.path.isfile("server_conf.json")
+    if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
       data = json.load(f)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
@@ -30,7 +30,7 @@ if check_server_conf != 200:
     st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
     s_URI = st.input("Server URL:", key="server_URI")
     s_KEY = st.input("Server API Key:", key="server_KEY")
-    if st.button("Submit")
+    if st.button("Submit"):
         output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
         with open("server_conf.json", "w") as outfile:
         json.dump(dictionary, outfile)
