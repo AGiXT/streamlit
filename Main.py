@@ -1,7 +1,7 @@
 import requests, os, json
 import streamlit as st
 from components.docs import agixt_docs
-
+from dotenv import load_dotenv
 import ApiClient
 
 # Check if session.txt exists
@@ -19,8 +19,9 @@ st.set_page_config(
 )
 
 def check_server_conf():
-    base_uri = ApiClient.base_uri
-    api_key = ApiClient.agixt_api_key
+    load_dotenv()
+    base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
+    agixt_api_key = os.getenv("AGIXT_API_KEY", "")
     #server_response.status_code = 401
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
