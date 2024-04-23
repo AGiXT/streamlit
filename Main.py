@@ -22,7 +22,7 @@ if os.path.isfile("server_conf.json") == False:
     base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
     api_key = os.getenv("AGIXT_API_KEY", "")
 else
-    load_env
+    load_env()
     
 def load_env():
     f = open("server_conf.json")
