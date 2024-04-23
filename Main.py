@@ -2,8 +2,6 @@ import requests, os, json
 import streamlit as st
 from components.docs import agixt_docs
 
-from ApiClient import ApiClient
-
 # Check if session.txt exists
 try:
     with open("./session.txt") as f:
@@ -19,16 +17,18 @@ st.set_page_config(
 )
 
 def check_server_conf():
-    base_uri = ApiClient.base_uri
-    api_key = ApiClient.agixt_api_key
-    #server_response.status_code = 401
+    global base_uri
+    server_response.status_code = 401
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
       data = json.load(f)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
-    elif base_uri:
+    else:
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
-    return server_response.status_code
+    try:
+      return int(server_response.status_code)
+    except:
+      return 401
   
 if check_server_conf() != 200:
     # Show API config
