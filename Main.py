@@ -17,10 +17,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+load_dotenv()
+global base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
+global api_key = os.getenv("AGIXT_API_KEY", "")
+    
 def check_server_conf():
-    load_dotenv()
-    global base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
-    global api_key = os.getenv("AGIXT_API_KEY", "")
     st.warning("Base Uri: " + base_uri)
     st.warning("API Key: " + api_key)
     
