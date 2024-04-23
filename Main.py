@@ -34,8 +34,11 @@ def check_server_conf():
     except:
       return 401
   
-if check_server_conf() != 200:
+serv_resp = check_server_conf()
+  
+if serv_resp != 200:
     # Show API config
+    st.warning(serv_resp)
     st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
     s_URI = st.text_input("Server URL:", key="server_URI")
     s_KEY = st.text_input("Server API Key:", key="server_KEY")
