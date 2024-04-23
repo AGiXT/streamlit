@@ -54,7 +54,7 @@ if serv_resp != 200:
         output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
         while os.path.isfile("server_conf.json") == False:
             with open("server_conf.json", "w") as outfile:
-                json.dump(output_json)
+                json.dump(output_json, outfile)
         st.rerun()
     st.stop()
     
