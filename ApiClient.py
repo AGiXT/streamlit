@@ -3,6 +3,13 @@ import streamlit as st
 from dotenv import load_dotenv
 from agixtsdk import AGiXTSDK
 
+st.set_page_config(
+    page_title="AGiXT",
+    page_icon=":robot:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 load_dotenv()
 base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
 agixt_api_key = os.getenv("AGIXT_API_KEY", "")
