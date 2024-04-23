@@ -18,7 +18,7 @@ st.set_page_config(
 
 def check_server_conf():
     
-    server_response = rquests.get(f"localhost:0001")
+    server_response = requests.get(f"localhost:0001")
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
       data = json.load(f)
