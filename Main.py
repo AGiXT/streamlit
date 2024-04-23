@@ -23,12 +23,13 @@ def check_server_conf():
     base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
     api_key = os.getenv("AGIXT_API_KEY", "")
     #server_response.status_code = 401
-    if os.path.isfile("server_conf.json"):
+    if os.path.isfile("server_conf.json") == False:
+      server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
+    elif os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
       data = json.load(f)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
-    else:
-      server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
+
     try:
       return int(server_response.status_code)
     except:
