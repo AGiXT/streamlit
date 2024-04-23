@@ -28,8 +28,8 @@ def check_server_conf():
 if check_server_conf != 200:
     # Show API config
     st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
-    s_URI = st.input("Server URL:", key="server_URI")
-    s_KEY = st.input("Server API Key:", key="server_KEY")
+    s_URI = st.text_input("Server URL:", key="server_URI")
+    s_KEY = st.text_input("Server API Key:", key="server_KEY")
     if st.button("Submit"):
         output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
         with open("server_conf.json", "w") as outfile:
