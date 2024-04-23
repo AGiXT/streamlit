@@ -18,7 +18,7 @@ st.set_page_config(
 
 def check_server_conf():
     
-    server_response = requests.get(f"127.0.0.1", headers = {"Authorization": api_key}})
+    server_response = requests.get(f"127.0.0.1")
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
       data = json.load(f)
