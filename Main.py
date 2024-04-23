@@ -9,13 +9,6 @@ try:
         agent_name = f.read()
 except:
     agent_name = ""
-
-st.set_page_config(
-    page_title="AGiXT",
-    page_icon=":robot:",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
     
 agixt_docs()
 
