@@ -21,7 +21,7 @@ st.set_page_config(
 def check_server_conf():
     load_dotenv()
     base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
-    agixt_api_key = os.getenv("AGIXT_API_KEY", "")
+    api_key = os.getenv("AGIXT_API_KEY", "")
     #server_response.status_code = 401
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
