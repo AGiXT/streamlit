@@ -33,7 +33,7 @@ if check_server_conf != 200:
     if st.button("Submit"):
         output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
         with open("server_conf.json", "w") as outfile:
-        json.dump(dictionary, outfile)
+            json.dump(dictionary, outfile)
         st.reload()
     st.stop()
 
