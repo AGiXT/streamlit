@@ -53,7 +53,7 @@ if serv_resp != 200:
     if st.button("Submit"):
         output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
         with open("server_conf.json", "w") as outfile:
-            f.write(json.dumps(output_json))
+            json.dump(output_json)
         st.rerun()
     st.stop()
     
