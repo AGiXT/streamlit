@@ -24,13 +24,14 @@ def load_env():
     base_uri = data['SERVER_URI']
     if base_uri[-1] == "/": base_uri=base_uri[:-1]
     api_key = data['API_KEY']
+    return base_uri,api_key
 
 if os.path.isfile("server_conf.json") == False:
     load_dotenv()
     base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
     api_key = os.getenv("AGIXT_API_KEY", "")
 else:
-    load_env()
+    base_uri, api_key = load_env()
 
 def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
     st.warning("Base Uri: " + base_uri)
