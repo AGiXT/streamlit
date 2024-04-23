@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-define check_server_conf()
+define check_server_conf():
     if os.path.isfile("server_conf.json")
       f = open("server_conf.json")
       data = json.load(f)
