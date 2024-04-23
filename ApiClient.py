@@ -47,7 +47,7 @@ if serv_resp != 200:
     #st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
     
     import streamlit as st
-    with st.form():
+    with st.form("Update Back-End Settings"):
       s_URI = st.text_input("Server URL:", value = base_uri, key="server_URI")
       s_KEY = st.text_input("Server API Key:", key="server_KEY")
       submitted = st.form_submit_button("Submit")
