@@ -22,7 +22,7 @@ def check_server_conf():
       f = open("server_conf.json")
       data = json.load(f)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
-    elseif base_uri:
+    elif {base_uri}:
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
     return server_response.status_code
   
