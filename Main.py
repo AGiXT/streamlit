@@ -52,7 +52,10 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
       return 401
   
 serv_resp = check_server_conf(base_uri, api_key)
-  
+if serv_resp == 200: 
+    os.environ["AGIXT_URI"] = base_uri
+    os.environ["AGIXT_API_KEY"] = api_key
+
 if serv_resp != 200:
     # Show API config
     st.warning(serv_resp)
@@ -65,7 +68,7 @@ if serv_resp != 200:
             json.dump(output_json, outfile)
         st.rerun()
     st.stop()
-
+    
 agixt_docs()
 
 if agent_name == "":
