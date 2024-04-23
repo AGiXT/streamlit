@@ -24,10 +24,10 @@ def check_server_conf():
     api_key = os.getenv("AGIXT_API_KEY", "")
     
     if os.path.isfile("server_conf.json") == False:
-      print("Server Config Found")
+      print("Server Config Does Not Exist")
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
     elif os.path.isfile("server_conf.json") == True:
-      print("Server Cofnig Does Not Exist")
+      print("Server Config Found")
       f = open("server_conf.json")
       data = json.load(f)
       server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
