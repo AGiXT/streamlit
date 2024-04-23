@@ -1,5 +1,5 @@
 import os, requests, json
-streamlit as st
+import streamlit as st
 from dotenv import load_dotenv
 from agixtsdk import AGiXTSDK
 
