@@ -60,6 +60,6 @@ if serv_resp != 200:
         st.rerun()
     st.stop()
     
-ApiClient = AGiXTSDK(base_uri=base_uri, api_key=agixt_api_key)
+ApiClient = AGiXTSDK(base_uri=base_uri, api_key=api_key)
 
 DEV_MODE = os.getenv("DEV_MODE", False)
