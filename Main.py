@@ -25,7 +25,7 @@ def check_server_conf():
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
     return server_response.status_code
   
-if check_server_conf != 200:
+if check_server_conf() != 200:
     # Show API config
     st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
     s_URI = st.text_input("Server URL:", key="server_URI")
