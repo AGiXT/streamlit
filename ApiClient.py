@@ -1,5 +1,4 @@
 import os, requests, json
-import streamlit as st
 from dotenv import load_dotenv
 from agixtsdk import AGiXTSDK
     
@@ -46,6 +45,9 @@ if serv_resp != 200:
     # Show API config
     #st.warning(serv_resp)
     #st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
+    
+    import streamlit as st
+
     s_URI = st.text_input("Server URL:", value = base_uri, key="server_URI")
     s_KEY = st.text_input("Server API Key:", key="server_KEY")
     if st.button("Submit"):
