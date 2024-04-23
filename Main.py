@@ -20,7 +20,7 @@ st.set_page_config(
 
 def check_server_conf():
     base_uri = ApiClient.base_uri
-    api_key = ApiClient.api_key
+    api_key = ApiClient.ApiClient.api_key
     #server_response.status_code = 401
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
