@@ -7,15 +7,16 @@ from components.selectors import (
     prompt_options,
     prompt_selection,
 )
-from ApiClient import ApiClient, DEV_MODE
-from components.docs import agixt_docs, predefined_injection_variables
-import time
 
 st.set_page_config(
     page_title="Agent Interactions",
     page_icon=":speech_balloon:",
     layout="wide",
 )
+
+from ApiClient import ApiClient, DEV_MODE
+from components.docs import agixt_docs, predefined_injection_variables
+import time
 
 
 agixt_docs()
