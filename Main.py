@@ -44,7 +44,7 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
     elif os.path.isfile("server_conf.json") == True:
       print("Server Config Found")
       load_env()
-      server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": data['API_KEY']})
+      server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
 
     try:
       return int(server_response.status_code)
