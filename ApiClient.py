@@ -55,7 +55,7 @@ if serv_resp != 200:
         while os.path.isfile("server_conf.json") == False:
             with open("server_conf.json", "w") as outfile:
                 json.dump(output_json)
-            st.rerun()
+        st.rerun()
     st.stop()
     
 load_dotenv()
