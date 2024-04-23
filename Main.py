@@ -19,8 +19,8 @@ st.set_page_config(
 
 def check_server_conf():
     load_dotenv()
-    base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
-    api_key = os.getenv("AGIXT_API_KEY", "")
+    global base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
+    global api_key = os.getenv("AGIXT_API_KEY", "")
     st.warning("Base Uri: " + base_uri)
     st.warning("API Key: " + api_key)
     
