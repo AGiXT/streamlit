@@ -2,7 +2,6 @@ import requests, os, json
 import streamlit as st
 from components.docs import agixt_docs
 from dotenv import load_dotenv
-import ApiClient
 
 # Check if session.txt exists
 try:
@@ -22,6 +21,8 @@ def check_server_conf():
     load_dotenv()
     base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
     api_key = os.getenv("AGIXT_API_KEY", "")
+    st.warning("Base Uri: " + base_uri)
+    st.warning("API Key: " + api_key)
     
     if os.path.isfile("server_conf.json") == False:
       print("Server Config Does Not Exist")
