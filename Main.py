@@ -17,6 +17,7 @@ st.set_page_config(
 )
 
 def check_server_conf():
+    server_response = ""
     server_response.statuscode = 401
     if os.path.isfile("server_conf.json"):
       f = open("server_conf.json")
