@@ -1,3 +1,4 @@
+import requests, os, json
 import streamlit as st
 from components.docs import agixt_docs
 
@@ -14,6 +15,27 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+define check_server_conf()
+    if os.path.isfile("server_conf.json")
+      f = open("server_conf.json")
+      data = json.load(f)
+      server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
+    else
+      server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
+    return server_response.status_code
+  
+if check_server_conf != 200:
+    # Show API config
+    st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
+    s_URI = st.input("Server URL:", key="server_URI")
+    s_KEY = st.input("Server API Key:", key="server_KEY")
+    if st.button("Submit")
+        output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
+        with open("server_conf.json", "w") as outfile:
+        json.dump(dictionary, outfile)
+        st.reload()
+    st.stop()
 
 agixt_docs()
 
