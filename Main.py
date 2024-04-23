@@ -21,7 +21,7 @@ load_dotenv()
 base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
 api_key = os.getenv("AGIXT_API_KEY", "")
     
-def check_server_conf():
+def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
     st.warning("Base Uri: " + base_uri)
     st.warning("API Key: " + api_key)
     
@@ -40,7 +40,7 @@ def check_server_conf():
     except:
       return 401
   
-serv_resp = check_server_conf()
+serv_resp = check_server_conf(base_uri, api_key)
   
 if serv_resp != 200:
     # Show API config
