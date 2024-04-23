@@ -14,7 +14,7 @@ DEV_MODE = os.getenv("DEV_MODE", False)
 def load_env():
     f = open("server_conf.json")
     data = json.load(f)
-    st.warning(data['SERVER_URI'])
+    #st.warning(data['SERVER_URI'])
     base_uri = data['SERVER_URI']
     if base_uri[-1] == "/": base_uri=base_uri[:-1]
     api_key = data['API_KEY']
@@ -28,8 +28,8 @@ else:
     base_uri, api_key = load_env()
 
 def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
-    st.warning("Base Uri: " + base_uri)
-    st.warning("API Key: " + api_key)
+    #st.warning("Base Uri: " + base_uri)
+    #st.warning("API Key: " + api_key)
     
     if os.path.isfile("server_conf.json") == False:
       print("Server Config Does Not Exist")
@@ -52,8 +52,8 @@ if serv_resp == 200:
 
 if serv_resp != 200:
     # Show API config
-    st.warning(serv_resp)
-    st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
+    #st.warning(serv_resp)
+    #st.warning("The API Config Is Invalid - Please Re-Enter Server URL & API Key")
     s_URI = st.text_input("Server URL:", value = base_uri, key="server_URI")
     s_KEY = st.text_input("Server API Key:", key="server_KEY")
     if st.button("Submit"):
