@@ -26,6 +26,7 @@ def check_server_conf():
     
     if os.path.isfile("server_conf.json") == False:
       print("Server Config Does Not Exist")
+      if base_uri[-1] == "/": base_uri=base_uri[:-1]
       server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": api_key})
     elif os.path.isfile("server_conf.json") == True:
       print("Server Config Found")
