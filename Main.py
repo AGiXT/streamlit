@@ -34,7 +34,8 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
       f = open("server_conf.json")
       data = json.load(f)
       st.warning(data['SERVER_URI'])
-      server_response = requests.get(f""+data['SERVER_URI']+"/api/providers", headers={"Authorization": data['API_KEY']})
+      if daa['SERVER_URI'] == "/": base_uri=base_uri[:-1]
+      server_response = requests.get(f"{base_uri}/api/providers", headers={"Authorization": data['API_KEY']})
 
     try:
       return int(server_response.status_code)
