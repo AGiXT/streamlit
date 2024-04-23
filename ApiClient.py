@@ -54,6 +54,7 @@ if serv_resp != 200:
         output_json = {"SERVER_URI" : s_URI,"API_KEY" : s_KEY}
         with open("server_conf.json", "w") as outfile:
             json.dump(output_json, outfile)
+            close("server_conf.json")
         st.rerun()
     st.stop()
     
