@@ -2,6 +2,8 @@ import requests, os, json
 import streamlit as st
 from components.docs import agixt_docs
 
+import ApiClient
+
 # Check if session.txt exists
 try:
     with open("./session.txt") as f:
