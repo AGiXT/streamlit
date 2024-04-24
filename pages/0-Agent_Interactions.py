@@ -7,7 +7,7 @@ from components.selectors import (
     prompt_options,
     prompt_selection,
 )
-from ApiClient import ApiClient, DEV_MODE
+from ApiClient import ApiClient
 from components.docs import agixt_docs, predefined_injection_variables
 import time
 

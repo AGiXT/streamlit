@@ -238,12 +238,12 @@ if agent_name:
                 selected_vision_provider if selected_vision_provider != "None" else None
             ),
             "transcription_provider": selected_stt_provider,
+            "translation_provider": selected_stt_provider,
             "tts_provider": selected_tts_provider,
             "image_provider": (
                 selected_image_provider if selected_image_provider != "None" else None
             ),
             "helper_agent_name": helper_agent,
-            "extensions": selected_extensions,
             **extension_settings,
             "mode": chat_completions_mode,
         }
