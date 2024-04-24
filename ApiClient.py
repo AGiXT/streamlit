@@ -44,10 +44,6 @@ def check_server_conf(base_uri="http://localhost:7437", api_key=""):
 
 base_uri, api_key = load_env()
 serv_resp = check_server_conf(base_uri, api_key)
-if serv_resp == 200:
-    os.environ["AGIXT_URI"] = base_uri
-    os.environ["AGIXT_API_KEY"] = api_key
-
 if serv_resp != 200:
     with st.form("Update Back-End Settings"):
         s_URI = st.text_input("Server URL:", value=base_uri, key="server_URI")
@@ -60,7 +56,6 @@ if serv_resp != 200:
                     json.dump(output_json, outfile)
             st.rerun()
     st.stop()
-
 
 ApiClient = AGiXTSDK(base_uri=base_uri, api_key=api_key)
 DEV_MODE = os.getenv("DEV_MODE", False)
