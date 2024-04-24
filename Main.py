@@ -1,5 +1,7 @@
+import requests, os, json
 import streamlit as st
 from components.docs import agixt_docs
+from dotenv import load_dotenv
 
 # Check if session.txt exists
 try:
@@ -14,7 +16,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
+    
 agixt_docs()
 
 if agent_name == "":
