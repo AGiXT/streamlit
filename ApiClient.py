@@ -3,8 +3,15 @@ from dotenv import load_dotenv
 from agixtsdk import AGiXTSDK
 import streamlit as st
 
+load_dotenv()
+
 
 def load_env():
+    if os.path.isfile("./server_conf.json") == False:
+        load_dotenv()
+        base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
+        api_key = os.getenv("AGIXT_API_KEY", "")
+        return base_uri, api_key
     f = open("./server_conf.json")
     data = json.load(f)
     base_uri = data["SERVER_URI"]
@@ -14,15 +21,7 @@ def load_env():
     return base_uri, api_key
 
 
-if os.path.isfile("./server_conf.json") == False:
-    load_dotenv()
-    base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
-    api_key = os.getenv("AGIXT_API_KEY", "")
-else:
-    base_uri, api_key = load_env()
-
-
-def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
+def check_server_conf(base_uri="http://localhost:7437", api_key=""):
     if os.path.isfile("./server_conf.json") == False:
         print("Server Config Does Not Exist")
         if base_uri[-1] == "/":
@@ -32,7 +31,7 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
         )
     elif os.path.isfile("./server_conf.json") == True:
         print("Server Config Found")
-        load_env()
+        base_uri, api_key = load_env()
         server_response = requests.get(
             f"{base_uri}/api/providers", headers={"Authorization": api_key}
         )
@@ -43,6 +42,7 @@ def check_server_conf(base_uri="127.0.0.1:7437/", api_key=""):
         return 401
 
 
+base_uri, api_key = load_env()
 serv_resp = check_server_conf(base_uri, api_key)
 if serv_resp == 200:
     os.environ["AGIXT_URI"] = base_uri
@@ -61,8 +61,6 @@ if serv_resp != 200:
             st.rerun()
     st.stop()
 
-load_dotenv()
-base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
-agixt_api_key = os.getenv("AGIXT_API_KEY", "")
-ApiClient = AGiXTSDK(base_uri=base_uri, api_key=agixt_api_key)
+
+ApiClient = AGiXTSDK(base_uri=base_uri, api_key=api_key)
 DEV_MODE = os.getenv("DEV_MODE", False)
