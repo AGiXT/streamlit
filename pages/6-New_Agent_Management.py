@@ -74,41 +74,6 @@ if agent_name:
             provider_settings,
         )
 
-        st.subheader("Speech to Text Provider")
-        stt_providers = sdk.get_providers_by_service("transcription")
-        selected_stt_provider = st.selectbox(
-            "Select speech to text provider:",
-            stt_providers,
-            index=(
-                stt_providers.index(agent_settings.get("transcription_provider"))
-                if "transcription_provider" in agent_settings
-                else 0
-            ),
-        )
-        provider_settings = render_provider_settings(
-            selected_stt_provider,
-            agent_settings,
-            provider_settings,
-        )
-
-        st.subheader("Image Generation Provider (Optional)")
-        image_providers = ["None"] + sdk.get_providers_by_service("image")
-        selected_image_provider = st.selectbox(
-            "Select image generation provider:",
-            image_providers,
-            index=(
-                image_providers.index(agent_settings.get("image_provider"))
-                if "image_provider" in agent_settings
-                else 0
-            ),
-        )
-        if selected_image_provider != "None":
-            provider_settings = render_provider_settings(
-                selected_image_provider,
-                agent_settings,
-                provider_settings,
-            )
-
     with col2:
         st.subheader("Vision Provider (Optional)")
         vision_providers = ["None"] + sdk.get_providers_by_service("vision")
@@ -144,6 +109,40 @@ if agent_name:
             agent_settings,
             provider_settings,
         )
+
+        st.subheader("Speech to Text Provider")
+        stt_providers = sdk.get_providers_by_service("transcription")
+        selected_stt_provider = st.selectbox(
+            "Select speech to text provider:",
+            stt_providers,
+            index=(
+                stt_providers.index(agent_settings.get("transcription_provider"))
+                if "transcription_provider" in agent_settings
+                else 0
+            ),
+        )
+        provider_settings = render_provider_settings(
+            selected_stt_provider,
+            agent_settings,
+            provider_settings,
+        )
+        st.subheader("Image Generation Provider (Optional)")
+        image_providers = ["None"] + sdk.get_providers_by_service("image")
+        selected_image_provider = st.selectbox(
+            "Select image generation provider:",
+            image_providers,
+            index=(
+                image_providers.index(agent_settings.get("image_provider"))
+                if "image_provider" in agent_settings
+                else 0
+            ),
+        )
+        if selected_image_provider != "None":
+            provider_settings = render_provider_settings(
+                selected_image_provider,
+                agent_settings,
+                provider_settings,
+            )
 
     st.header("Configure Agent Settings")
     col3, col4 = st.columns(2)
