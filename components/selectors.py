@@ -409,10 +409,14 @@ def helper_agent_selection(
     agent_settings = agent_config.get("settings", {})
     helper_agent = agent_settings.get("helper_agent_name", current_agent)
     # Create the selectbox
+    try:
+        agent_index = agent_names.index(helper_agent) + 1
+    except:
+        agent_index = 0
     selected_agent = st.selectbox(
         heading,
         options=[""] + agent_names,
-        index=agent_names.index(helper_agent) + 1,
+        index=agent_index,
         key=key,
     )
     return selected_agent
