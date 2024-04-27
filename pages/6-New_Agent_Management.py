@@ -1,5 +1,5 @@
 import streamlit as st
-from ApiClient import ApiClient as sdk
+from ApiClient import ApiClient
 from components.selectors import (
     helper_agent_selection,
     prompt_selection,
@@ -19,7 +19,7 @@ st.title("New Agent Management")
 
 
 def render_provider_settings(provider_name, agent_settings, provider_settings):
-    settings = sdk.get_provider_settings(provider_name=provider_name)
+    settings = ApiClient.get_provider_settings(provider_name=provider_name)
     for key, value in settings.items():
         if key != "provider":
             if key in provider_settings:
@@ -39,12 +39,12 @@ agent_action = st.selectbox("Action", ["Create Agent", "Modify Agent", "Delete A
 if agent_action == "Create Agent":
     agent_name = st.text_input("Enter the agent name:")
 else:
-    agent_names = [agent["name"] for agent in sdk.get_agents()]
+    agent_names = [agent["name"] for agent in ApiClient.get_agents()]
     agent_name = st.selectbox("Select an agent:", agent_names)
 
 if agent_name:
     if agent_action == "Modify Agent":
-        agent_config = sdk.get_agentconfig(agent_name)
+        agent_config = ApiClient.get_agentconfig(agent_name)
         agent_settings = agent_config.get("settings", {})
         agent_commands = agent_config.get("commands", {})
     else:
@@ -58,7 +58,7 @@ if agent_name:
 
     with col1:
         st.subheader("Language Provider")
-        language_providers = sdk.get_providers_by_service("llm")
+        language_providers = ApiClient.get_providers_by_service("llm")
         selected_language_provider = st.selectbox(
             "Select language provider:",
             language_providers,
@@ -76,7 +76,7 @@ if agent_name:
 
     with col2:
         st.subheader("Vision Provider (Optional)")
-        vision_providers = ["None"] + sdk.get_providers_by_service("vision")
+        vision_providers = ["None"] + ApiClient.get_providers_by_service("vision")
         selected_vision_provider = st.selectbox(
             "Select vision provider:",
             vision_providers,
@@ -94,7 +94,7 @@ if agent_name:
             )
 
         st.subheader("Text to Speech Provider")
-        tts_providers = sdk.get_providers_by_service("tts")
+        tts_providers = ApiClient.get_providers_by_service("tts")
         selected_tts_provider = st.selectbox(
             "Select text to speech provider:",
             tts_providers,
@@ -111,7 +111,7 @@ if agent_name:
         )
 
         st.subheader("Speech to Text Provider")
-        stt_providers = sdk.get_providers_by_service("transcription")
+        stt_providers = ApiClient.get_providers_by_service("transcription")
         selected_stt_provider = st.selectbox(
             "Select speech to text provider:",
             stt_providers,
@@ -127,7 +127,7 @@ if agent_name:
             provider_settings,
         )
         st.subheader("Image Generation Provider (Optional)")
-        image_providers = ["None"] + sdk.get_providers_by_service("image")
+        image_providers = ["None"] + ApiClient.get_providers_by_service("image")
         selected_image_provider = st.selectbox(
             "Select image generation provider:",
             image_providers,
@@ -143,13 +143,26 @@ if agent_name:
                 agent_settings,
                 provider_settings,
             )
+        st.subheader("Embeddings Provider")
+        embedding_providers = ApiClient.get_providers_by_service("embeddings")
+        selected_embedding_provider = st.selectbox(
+            "Select embeddings provider:",
+            embedding_providers,
+            index=(
+                embedding_providers.index(
+                    agent_settings.get("embeddings_provider", "default")
+                )
+                if "embeddings_provider" in agent_settings
+                else 0
+            ),
+        )
 
     st.header("Configure Agent Settings")
     col3, col4 = st.columns(2)
 
     with col3:
         st.subheader("Extensions")
-        extensions = sdk.get_extensions()
+        extensions = ApiClient.get_extensions()
         extension_options = [extension["extension_name"] for extension in extensions]
 
         # Automatically select extensions based on enabled commands
@@ -242,6 +255,7 @@ if agent_name:
             "image_provider": (
                 selected_image_provider if selected_image_provider != "None" else None
             ),
+            "embeddings_provider": selected_embedding_provider,
             "helper_agent_name": helper_agent,
             **extension_settings,
             "mode": chat_completions_mode,
@@ -260,16 +274,20 @@ if agent_name:
         commands = {command: True for command in selected_commands}
 
         if agent_action == "Create Agent":
-            response = sdk.add_agent(
+            response = ApiClient.add_agent(
                 agent_name, {"settings": settings, "commands": commands}
             )
             st.success(f"Agent '{agent_name}' created.")
         elif agent_action == "Modify Agent":
-            response = sdk.update_agent_settings(agent_name, settings)
-            response = sdk.update_agent_commands(agent_name, commands)
+            response = ApiClient.update_agent_settings(
+                agent_name=agent_name, settings=settings
+            )
+            response = ApiClient.update_agent_commands(
+                agent_name=agent_name, commands=commands
+            )
             st.success(f"Agent '{agent_name}' updated.")
         elif agent_action == "Delete Agent":
-            response = sdk.delete_agent(agent_name)
+            response = ApiClient.delete_agent(agent_name)
             st.success(f"Agent '{agent_name}' deleted.")
 else:
     st.warning("Please enter an agent name.")
