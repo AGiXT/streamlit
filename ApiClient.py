@@ -9,7 +9,7 @@ load_dotenv()
 def load_env():
     if os.path.isfile("./server_conf.json") == False:
         load_dotenv()
-        base_uri = os.getenv("AGIXT_URI", "http://localhost:7437")
+        base_uri = os.getenv("AGIXT_URI", "http://agixt:7437")
         api_key = os.getenv("AGIXT_API_KEY", "")
         return base_uri, api_key
     f = open("./server_conf.json")
@@ -21,7 +21,7 @@ def load_env():
     return base_uri, api_key
 
 
-def check_server_conf(base_uri="http://localhost:7437", api_key=""):
+def check_server_conf(base_uri="http://agixt:7437", api_key=""):
     if os.path.isfile("./server_conf.json") == False:
         print("Server Config Does Not Exist")
         if base_uri[-1] == "/":
