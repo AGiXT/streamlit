@@ -401,11 +401,12 @@ def agent_selection(key: str = "select_learning_agent", heading: str = "Agent Na
 
 
 def helper_agent_selection(
-    current_agent: str, key: str = "select_learning_agent", heading: str = "Agent Name"
+    current_agent: str,
+    key: str = "select_learning_agent",
+    heading: str = "Agent Name",
+    agent_config={},
 ):
-    # Get the list of agent names
     agent_names = [agent["name"] for agent in ApiClient.get_agents()]
-    agent_config = ApiClient.get_agentconfig(agent_name=current_agent)
     agent_settings = agent_config.get("settings", {})
     helper_agent = agent_settings.get("helper_agent_name", current_agent)
     # Create the selectbox
