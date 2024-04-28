@@ -78,13 +78,14 @@ with col1:
 with col2:
     st.subheader("Vision Provider (Optional)")
     vision_providers = ["None"] + ApiClient.get_providers_by_service("vision")
+    vp = agent_settings.get("vision_provider", "None")
+    if not vp:
+        vp = "None"
     selected_vision_provider = st.selectbox(
         "Select vision provider:",
         vision_providers,
         index=(
-            vision_providers.index(agent_settings.get("vision_provider"))
-            if "vision_provider" in agent_settings
-            else 0
+            vision_providers.index(vp) if "vision_provider" in agent_settings else 0
         ),
     )
     if selected_vision_provider != "None":
@@ -245,16 +246,14 @@ if st.button("Save Agent Settings"):
     settings = {
         "provider": selected_language_provider,
         **provider_settings,
-        "vision_provider": (
-            selected_vision_provider if selected_vision_provider != "None" else None
-        ),
+        "vision_provider": selected_vision_provider,
         "transcription_provider": selected_stt_provider,
         "translation_provider": selected_stt_provider,
         "tts_provider": (
-            selected_tts_provider if selected_tts_provider != "None" else None
+            selected_tts_provider if selected_tts_provider != "None" else "None"
         ),
         "image_provider": (
-            selected_image_provider if selected_image_provider != "None" else None
+            selected_image_provider if selected_image_provider != "None" else "None"
         ),
         "embeddings_provider": selected_embedding_provider,
         "helper_agent_name": helper_agent,
