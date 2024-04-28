@@ -21,15 +21,14 @@ st.title("Agent Management")
 def render_provider_settings(provider_name, agent_settings, provider_settings):
     settings = ApiClient.get_provider_settings(provider_name=provider_name)
     for key, value in settings.items():
-        if key != "provider":
-            if key in provider_settings:
-                # Use existing provider settings if available
-                settings[key] = provider_settings[key]
-            else:
-                # Create new provider settings
-                settings[key] = st.text_input(
-                    f"{key}:", value=agent_settings.get(key, value)
-                )
+        if key in provider_settings:
+            # Use existing provider settings if available
+            settings[key] = provider_settings[key]
+        else:
+            # Create new provider settings
+            settings[key] = st.text_input(
+                f"{key}:", value=agent_settings.get(key, value)
+            )
     provider_settings.update(settings)
     return provider_settings
 
