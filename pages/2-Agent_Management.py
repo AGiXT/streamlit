@@ -130,11 +130,18 @@ with col2:
     )
     st.subheader("Image Generation Provider (Optional)")
     image_providers = ["None"] + ApiClient.get_providers_by_service("image")
+    selected_img_provider = (
+        agent_settings["image_provider"]
+        if "image_provider" in agent_settings
+        else "None"
+    )
+    if selected_img_provider not in image_providers:
+        selected_img_provider = "None"
     selected_image_provider = st.selectbox(
         "Select image generation provider:",
         image_providers,
         index=(
-            image_providers.index(agent_settings.get("image_provider"))
+            image_providers.index(selected_img_provider)
             if "image_provider" in agent_settings
             else 0
         ),
