@@ -281,7 +281,7 @@ if st.button("Save Agent Settings"):
 
     if agent_action == "Create Agent":
         response = ApiClient.add_agent(
-            agent_name, {"settings": settings, "commands": commands}
+            agent_name=agent_name, settings=settings, commands=commands
         )
         st.success(f"Agent '{agent_name}' created.")
     elif agent_action == "Modify Agent":
