@@ -46,10 +46,15 @@ if agent_name:
             value=0,
         )
         if st.button("Wipe Agent Memories"):
-            res = ApiClient.wipe_agent_memories(
-                agent_name=agent_name, collection_number=collection_number
+            confirm = st.checkbox(
+                f"Are you sure you want to wipe {agent_name}'s memories in collection {collection_number}? This action cannot be undone."
             )
-            st.write(res)
+            if confirm:
+                res = ApiClient.wipe_agent_memories(
+                    agent_name=agent_name, collection_number=collection_number
+                )
+                if res:
+                    st.success("Memories wiped successfully.")
     else:
         collection_number = 0
         limit = 10
