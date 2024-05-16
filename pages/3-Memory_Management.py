@@ -31,20 +31,25 @@ if agent_name:
     )
     if st.session_state["advanced_options"]:
         predefined_memory_collections()
-        collection_number = st.number_input(
-            "Use collection number (Default is 0)",
-            min_value=0,
-            value=0,
-        )
-        limit = st.number_input(
-            "Limit (Default is 10)", min_value=1, max_value=100, value=10
-        )
         min_relevance_score = st.number_input(
             "Minimum relevance score (Default is 0.0)",
             min_value=0.0,
             max_value=1.0,
             value=0.0,
         )
+        limit = st.number_input(
+            "Limit (Default is 10)", min_value=1, max_value=100, value=10
+        )
+        collection_number = st.number_input(
+            "Use collection number (Default is 0)",
+            min_value=0,
+            value=0,
+        )
+        if st.button("Wipe Agent Memories"):
+            res = ApiClient.wipe_agent_memories(
+                agent_name=agent_name, collection_number=collection_number
+            )
+            st.write(res)
     else:
         collection_number = 0
         limit = 10
