@@ -129,6 +129,12 @@ def get_user():
             set_cookie("token", "", 1)
     st.title(app_name)
     if "otp_uri" in st.session_state:
+        hide_sidebar_style = """<style>
+            [data-testid="stSidebar"] {display: none;}
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+        </style>"""
+        st.markdown(hide_sidebar_style, unsafe_allow_html=True)
         otp_uri = st.session_state["otp_uri"]
         mfa_token = str(otp_uri).split("secret=")[1].split("&")[0]
         qr = qrcode.QRCode(
@@ -183,7 +189,11 @@ def get_user():
                 if login_button:
                     auth_response = requests.post(
                         f"{auth_uri}/v1/login",
-                        json={"email": email, "token": otp},
+                        json={
+                            "email": email,
+                            "token": otp,
+                            "referrer": getenv("APP_URI"),
+                        },
                     )
                     res = (
                         str(auth_response.json()["detail"])

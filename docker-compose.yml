@@ -69,5 +69,6 @@ services:
       YELP_CLIENT_ID: ${YELP_CLIENT_ID}
       ZENDESK_CLIENT_ID: ${ZENDESK_CLIENT_ID}
       ZENDESK_SUBDOMAIN: ${ZENDESK_SUBDOMAIN}
+      TZ: ${TZ:-America/New_York}
     ports:
       - "8501:8501"
