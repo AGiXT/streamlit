@@ -29,7 +29,7 @@ if agent_name:
             value=0,
         )
     else:
-        collection_number = 0
+        collection_number = "0"
 
     if mode == "Website":
         st.markdown("### Train from Websites")

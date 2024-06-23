@@ -56,7 +56,7 @@ if agent_name:
                 if res:
                     st.success("Memories wiped successfully.")
     else:
-        collection_number = 0
+        collection_number = "0"
         limit = 10
         min_relevance_score = 0.0
 

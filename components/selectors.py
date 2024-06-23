@@ -161,13 +161,12 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             key=f"shots_{step_number}",
         )
         predefined_memory_collections()
-        inject_memories_from_collection_number = st.number_input(
-            "Inject memories from collection number (Default is 0)",
-            min_value=0,
+        inject_memories_from_collection_number = st.text(
+            "Inject memories from collection (Default is 0)",
             value=(
-                0
+                "0"
                 if "inject_memories_from_collection_number" not in prompt
-                else int(prompt["inject_memories_from_collection_number"])
+                else str(prompt["inject_memories_from_collection_number"])
             ),
             key=f"inject_memories_from_collection_number_{step_number}",
         )
@@ -221,7 +220,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         websearch = False
         websearch_depth = 0
         enable_memory = False
-        inject_memories_from_collection_number = 0
+        inject_memories_from_collection_number = "0"
         conversation_results = 5
     return {
         "shots": shots,
