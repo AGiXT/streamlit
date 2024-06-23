@@ -70,8 +70,8 @@ def sso_buttons():
 
 
 def get_user():
-    app_name = os.environ.get("APP_NAME", "Magical Auth")
-    auth_uri = os.environ.get("AGIXT_URI", "http://localhost:12437")
+    app_name = getenv("APP_NAME")
+    auth_uri = getenv("AGIXT_URI")
     if "code" in st.query_params:
         if (
             st.query_params["code"] != ""
