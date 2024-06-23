@@ -161,10 +161,20 @@ def get_user():
             if confirm_button:
                 otp = pyotp.TOTP(mfa_token).verify(mfa_confirm)
                 if otp:
-                    _ = requests.post(
+                    response = requests.post(
                         f"{auth_uri}/v1/login",
                         json={"email": st.session_state["email"], "token": mfa_confirm},
                     )
+                    if response.status_code == 200:
+                        data = response.json()
+                        if "detail" in data:
+                            new_uri = data["detail"]
+                            if data["detail"].startswith("http"):
+                                st.markdown(
+                                    f'<meta http-equiv="refresh" content="0;URL={new_uri}">',
+                                    unsafe_allow_html=True,
+                                )
+                                st.stop()
                     st.session_state["mfa_confirmed"] = True
                     if "otp_uri" in st.session_state:
                         del st.session_state["otp_uri"]
