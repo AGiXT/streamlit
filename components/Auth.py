@@ -20,9 +20,8 @@ logging.basicConfig(
 Required environment variables:
 
 - APP_NAME: Name of the application
-- MAGICALAUTH_SERVER: URL of the MagicalAuth server
-- MAGIC_LINK_URL: URL of the application
-- GOOGLE_CLIENT_ID: Google OAuth client ID if using Google SSO
+- AGIXT_URI: URL of the MagicalAuth server
+- APP_URI: URL of the application
 """
 
 
@@ -43,7 +42,7 @@ def sso_buttons():
                     continue
                 provider_info = get_provider_info(provider=provider)
                 if code == "" and "token" not in st.query_params:
-                    magic_link_uri = getenv("MAGIC_LINK_URL")
+                    magic_link_uri = getenv("APP_URI")
                     if magic_link_uri.endswith("/"):
                         magic_link_uri = magic_link_uri[:-1]
                     magic_link_uri = f"{magic_link_uri}/{provider}"
@@ -72,7 +71,7 @@ def sso_buttons():
 
 def get_user():
     app_name = os.environ.get("APP_NAME", "Magical Auth")
-    auth_uri = os.environ.get("MAGICALAUTH_SERVER", "http://localhost:12437")
+    auth_uri = os.environ.get("AGIXT_URI", "http://localhost:12437")
     if "code" in st.query_params:
         if (
             st.query_params["code"] != ""
@@ -85,7 +84,7 @@ def get_user():
         if code != "" and code is not None and code != "None":
             response = requests.post(
                 f"{auth_uri}/v1/oauth2/google",
-                json={"code": code, "referrer": getenv("MAGIC_LINK_URL")},
+                json={"code": code, "referrer": getenv("APP_URI")},
             )
             if response.status_code == 200:
                 data = response.json()
@@ -124,6 +123,7 @@ def get_user():
         )
         if user_request.status_code == 200:
             user = user_request.json()
+            user["token"] = token
             return user
         else:
             set_cookie("token", "", 1)
@@ -252,7 +252,7 @@ def log_out_button():
 
 
 def sso_redirect(provider: str):
-    auth_uri = getenv("MAGICALAUTH_SERVER")
+    auth_uri = getenv("AGIXT_URI")
     if "code" in st.query_params:
         if (
             st.query_params["code"] != ""
@@ -263,7 +263,7 @@ def sso_redirect(provider: str):
     if "code" in st.session_state:
         code = st.session_state["code"]
         if code != "" and code is not None and code != "None":
-            referrer = f"{getenv('MAGIC_LINK_URL')}/{provider}"
+            referrer = f"{getenv('APP_URI')}/{provider}"
             response = requests.post(
                 f"{auth_uri}/v1/oauth2/{provider}",
                 json={"code": code, "referrer": referrer},
@@ -293,3 +293,75 @@ def sso_redirect(provider: str):
             f'<meta http-equiv="refresh" content="1;URL=../">',
             unsafe_allow_html=True,
         )
+
+
+def hide_pages():
+    dont_show_pages = [
+        "amazon",
+        "aol",
+        "apple",
+        "autodesk",
+        "battlenet",
+        "bitbucket",
+        "bitly",
+        "clearscore",
+        "cloud_foundry",
+        "deutsche_telekom",
+        "deviantart",
+        "discord",
+        "dropbox",
+        "facebook",
+        "fatsecret",
+        "fitbit",
+        "formstack",
+        "foursquare",
+        "github",
+        "gitlab",
+        "google",
+        "huddle",
+        "imgur",
+        "instagram",
+        "intel_cloud_services",
+        "jive",
+        "keycloak",
+        "linkedin",
+        "microsoft",
+        "netiq",
+        "okta",
+        "openam",
+        "openstreetmap",
+        "orcid",
+        "paypal",
+        "ping_identity",
+        "pixiv",
+        "reddit",
+        "salesforce",
+        "sina_weibo",
+        "spotify",
+        "stack_exchange",
+        "strava",
+        "stripe",
+        "twitch",
+        "viadeo",
+        "vimeo",
+        "vk",
+        "wechat",
+        "withings",
+        "xero",
+        "xing",
+        "yahoo",
+        "yammer",
+        "yandex",
+        "yelp",
+        "zendesk",
+    ]
+    hide_pages_style = """
+    <style>
+    """
+    for page in dont_show_pages:
+        hide_pages_style += f'[data-testid="stSidebar"] ul li:has(a[href*="{page}"]) {{display: none;}}\n'
+    hide_pages_style += """
+    </style>
+    """
+    # Apply the custom CSS
+    st.markdown(hide_pages_style, unsafe_allow_html=True)

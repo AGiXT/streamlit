@@ -7,17 +7,17 @@ from components.selectors import (
     prompt_options,
     prompt_selection,
 )
-from ApiClient import ApiClient
 from components.docs import agixt_docs, predefined_injection_variables
-import time
+from ApiClient import get_agixt
 
 st.set_page_config(
     page_title="Agent Interactions",
     page_icon=":speech_balloon:",
     layout="wide",
 )
-
-
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
 agixt_docs()
 
 st.header("Agent Interactions")
