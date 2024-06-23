@@ -1,11 +1,6 @@
 import streamlit as st
-from ApiClient import ApiClient
-from components.selectors import (
-    helper_agent_selection,
-    prompt_selection,
-    command_selection,
-    chain_selection,
-)
+from ApiClient import get_agixt
+from components.selectors import AGiXTSelectors
 from components.docs import agixt_docs
 
 st.set_page_config(
@@ -14,11 +9,16 @@ st.set_page_config(
     layout="wide",
 )
 agixt_docs()
-
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
+st.header("Agent Training")
+selectors = AGiXTSelectors(ApiClient=ApiClient)
 st.title("Agent Management")
 
 
 def render_provider_settings(provider_name, agent_settings, provider_settings):
+    global ApiClient
     settings = ApiClient.get_provider_settings(provider_name=provider_name)
     for key, value in settings.items():
         if key in provider_settings:
@@ -208,7 +208,7 @@ with col3:
 
 with col4:
     st.subheader("Helper Agent (Optional)")
-    helper_agent = helper_agent_selection(
+    helper_agent = selectors.helper_agent_selection(
         current_agent=agent_name,
         key="select_helper_agent",
         heading="Select Helper Agent (Your agent may ask the selected one for help when it needs something.)",
@@ -223,13 +223,19 @@ chat_completions_mode = st.selectbox(
 
 command_variable = ""
 if chat_completions_mode == "prompt":
-    prompt_settings = prompt_selection(prompt=agent_settings, show_user_input=False)
+    prompt_settings = selectors.prompt_selection(
+        prompt=agent_settings, show_user_input=False
+    )
 
 if chat_completions_mode == "chain":
-    chain_settings = chain_selection(prompt=agent_settings, show_user_input=False)
+    chain_settings = selectors.chain_selection(
+        prompt=agent_settings, show_user_input=False
+    )
 
 if chat_completions_mode == "command":
-    command_settings = command_selection(prompt=agent_settings, show_user_input=False)
+    command_settings = selectors.command_selection(
+        prompt=agent_settings, show_user_input=False
+    )
     if command_settings and "command_args" in command_settings:
         command_variable = st.selectbox(
             "Select Command Variable",

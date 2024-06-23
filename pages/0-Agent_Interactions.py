@@ -1,25 +1,19 @@
 import streamlit as st
 import os
-from components.selectors import (
-    agent_selection,
-    conversation_selection,
-    chain_selection,
-    prompt_options,
-    prompt_selection,
-)
-from ApiClient import ApiClient
+from components.selectors import AGiXTSelectors
 from components.docs import agixt_docs, predefined_injection_variables
-import time
+from ApiClient import get_agixt
 
 st.set_page_config(
     page_title="Agent Interactions",
     page_icon=":speech_balloon:",
     layout="wide",
 )
-
-
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
 agixt_docs()
-
+selectors = AGiXTSelectors(ApiClient=ApiClient)
 st.header("Agent Interactions")
 show_injection_var_docs = st.checkbox("Show Prompt Injection Variable Documentation")
 if show_injection_var_docs:
@@ -29,19 +23,21 @@ try:
         agent_name = f.read().strip()
 except:
     agent_name = "OpenAI"
-st.session_state["conversation"] = conversation_selection(agent_name=agent_name)
+st.session_state["conversation"] = selectors.conversation_selection(
+    agent_name=agent_name
+)
 mode = st.selectbox(
     "Select Agent Interaction Mode", ["Chat", "Chains", "Prompt", "Instruct"]
 )
 
-agent_name = agent_selection() if mode != "Chains" else ""
+agent_name = selectors.agent_selection() if mode != "Chains" else ""
 
 if mode == "Chat" or mode == "Instruct":
-    args = prompt_options()
+    args = selectors.prompt_options()
     args["user_input"] = st.text_area("User Input")
     args["prompt_name"] = "Chat" if mode != "Instruct" else "instruct"
 if mode == "Prompt":
-    args = prompt_selection()
+    args = selectors.prompt_selection()
 
 if mode != "Chains":
     if st.button("Send"):
@@ -59,7 +55,7 @@ if mode == "Chains":
     chain_names = ApiClient.get_chains()
     agent_override = st.checkbox("Override Agent")
     if agent_override:
-        agent_name = agent_selection()
+        agent_name = selectors.agent_selection()
     else:
         agent_name = ""
     advanced_options = st.checkbox("Show Advanced Options")
@@ -77,7 +73,7 @@ if mode == "Chains":
         single_step = False
         from_step = 1
         all_responses = False
-    args = chain_selection()
+    args = selectors.chain_selection()
     args["conversation_name"] = st.session_state["conversation"]
     chain_name = args["chain"] if "chain" in args else ""
     user_input = args["input"] if "input" in args else ""

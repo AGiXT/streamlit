@@ -1,5 +1,6 @@
 import streamlit as st
 from components.docs import agixt_docs
+from ApiClient import get_agixt
 
 # Check if session.txt exists
 try:
@@ -14,6 +15,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
 agixt_docs()
 
 if agent_name == "":
@@ -28,8 +32,6 @@ if agent_name == "":
 
     openai_api_key = st.text_input("OpenAI API Key", key="openai_api_key")
     if st.button("Update API Key"):
-        from ApiClient import ApiClient
-
         agent_config = ApiClient.get_agentconfig(agent_name="OpenAI")
         agent_settings = agent_config["settings"]
         agent_settings["OPENAI_API_KEY"] = openai_api_key

@@ -1,7 +1,7 @@
 import os
 import streamlit as st
-from components.selectors import agent_selection
-from ApiClient import ApiClient
+from components.selectors import AGiXTSelectors
+from ApiClient import get_agixt
 from components.docs import agixt_docs, predefined_memory_collections
 from datetime import datetime
 
@@ -12,6 +12,11 @@ st.set_page_config(
 )
 
 agixt_docs()
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
+st.header("Agent Training")
+selectors = AGiXTSelectors(ApiClient=ApiClient)
 try:
     with open(os.path.join("session.txt"), "r") as f:
         agent_name = f.read().strip()
@@ -21,7 +26,7 @@ st.header("Memory Management")
 st.markdown(
     "The `Search Query` is essentially what you would type to the AI when you're talking to it, this will show you what results would be injected in context for anything you say to the AI based on its memory collection. This will find similar results to anything you type with relevance score from memory. You can choose to delete memories from the memory collection here."
 )
-agent_name = agent_selection()
+agent_name = selectors.agent_selection()
 if agent_name:
     if "advanced_options" not in st.session_state:
         st.session_state["advanced_options"] = False
@@ -56,7 +61,7 @@ if agent_name:
                 if res:
                     st.success("Memories wiped successfully.")
     else:
-        collection_number = 0
+        collection_number = "0"
         limit = 10
         min_relevance_score = 0.0
 
