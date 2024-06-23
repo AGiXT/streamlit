@@ -167,6 +167,13 @@ def get_user():
                     st.write("Invalid MFA token. Please try again.")
                     st.stop()
     else:
+        # Hide side menu
+        hide_sidebar_style = """<style>
+            [data-testid="stSidebar"] {display: none;}
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+        </style>"""
+        st.markdown(hide_sidebar_style, unsafe_allow_html=True)
         new_user = st.checkbox("I am a new user")
         if not new_user:
             with st.form("login_form"):
@@ -200,18 +207,10 @@ def get_user():
                 email = st.text_input("Email")
                 first_name = st.text_input("First Name")
                 last_name = st.text_input("Last Name")
-                company_name = st.text_input("Company Name")
-                job_title = st.text_input("Job Title")
                 register_button = st.form_submit_button("Register")
                 if register_button:
                     # Make sure nothing is empty
-                    if (
-                        email == ""
-                        or first_name == ""
-                        or last_name == ""
-                        or company_name == ""
-                        or job_title == ""
-                    ):
+                    if email == "" or first_name == "" or last_name == "":
                         st.write("Please fill out all fields.")
                         st.stop()
                     response = requests.post(
@@ -220,8 +219,6 @@ def get_user():
                             "email": email,
                             "first_name": first_name,
                             "last_name": last_name,
-                            "company_name": company_name,
-                            "job_title": job_title,
                         },
                     )
                     try:
