@@ -23,7 +23,6 @@ class AGiXTSelectors:
             "helper_agent_name",
         ]
 
-    @st.cache_data
     def cached_get_extensions(self):
         return self.sdk.get_extensions()
 
