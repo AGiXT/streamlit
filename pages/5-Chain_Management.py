@@ -1,8 +1,8 @@
 import json
 import streamlit as st
-from ApiClient import ApiClient
+from ApiClient import get_agixt
 from components.docs import agixt_docs, predefined_injection_variables
-from components.chain import modify_chain
+from components.selectors import AGiXTSelectors
 
 st.set_page_config(
     page_title="Chain Management",
@@ -11,6 +11,10 @@ st.set_page_config(
 )
 
 agixt_docs()
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
+selectors = AGiXTSelectors(ApiClient=ApiClient)
 st.session_state = {}
 chain_names = ApiClient.get_chains()
 agents = ApiClient.get_agents()
@@ -56,6 +60,6 @@ elif chain_action == "Delete Chain":
 
 elif chain_action == "Modify Chain":
     if chain_name:
-        chain = modify_chain(chain_name=chain_name, agents=agents)
+        chain = selectors.modify_chain(chain_name=chain_name, agents=agents)
     else:
         st.warning("Please select a chain to manage steps.")

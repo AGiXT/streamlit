@@ -1,5 +1,5 @@
 import streamlit as st
-from ApiClient import ApiClient
+from ApiClient import get_agixt
 from components.docs import agixt_docs, predefined_injection_variables
 
 
@@ -8,6 +8,9 @@ st.set_page_config(
     page_icon=":scroll:",
     layout="wide",
 )
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
 agixt_docs()
 
 st.header("Prompt Management")

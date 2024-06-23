@@ -1,8 +1,8 @@
 import os
 import base64
 import streamlit as st
-from components.selectors import agent_selection
-from ApiClient import ApiClient
+from components.selectors import AGiXTSelectors
+from ApiClient import get_agixt
 from components.docs import agixt_docs, predefined_memory_collections
 
 st.set_page_config(
@@ -10,11 +10,13 @@ st.set_page_config(
     page_icon=":hammer_and_wrench:",
     layout="wide",
 )
-
 agixt_docs()
-
+ApiClient = get_agixt()
+if not ApiClient:
+    st.stop()
+selectors = AGiXTSelectors(ApiClient=ApiClient)
 st.header("Agent Training")
-agent_name = agent_selection()
+agent_name = selectors.agent_selection()
 if agent_name:
     mode = st.selectbox(
         "Select Training Source",
@@ -29,7 +31,7 @@ if agent_name:
             value=0,
         )
     else:
-        collection_number = 0
+        collection_number = "0"
 
     if mode == "Website":
         st.markdown("### Train from Websites")
