@@ -196,14 +196,14 @@ class AGiXTSelectors:
                 key=f"websearch_{step_number}",
             )
             if websearch:
+                try:
+                    default_depth = int(prompt["websearch_depth"])
+                except:
+                    default_depth = 2
                 websearch_depth = st.number_input(
                     "Websearch depth",
                     min_value=1,
-                    value=(
-                        3
-                        if "websearch_depth" not in prompt
-                        else int(prompt["websearch_depth"])
-                    ),
+                    value=int(default_depth),
                     key=f"websearch_depth_{step_number}",
                 )
             else:
