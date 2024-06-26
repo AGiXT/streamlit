@@ -202,7 +202,7 @@ class AGiXTSelectors:
                     default_depth = 2
                 websearch_depth = st.number_input(
                     "Websearch depth",
-                    min_value=1,
+                    min_value=0,
                     value=int(default_depth),
                     key=f"websearch_depth_{step_number}",
                 )
