@@ -166,7 +166,7 @@ class AGiXTSelectors:
                 key=f"shots_{step_number}",
             )
             predefined_memory_collections()
-            inject_memories_from_collection_number = st.text(
+            inject_memories_from_collection_number = st.text_input(
                 "Inject memories from collection (Default is 0)",
                 value=(
                     "0"
