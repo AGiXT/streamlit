@@ -163,7 +163,11 @@ def get_user():
                 if otp:
                     response = requests.post(
                         f"{auth_uri}/v1/login",
-                        json={"email": st.session_state["email"], "token": mfa_confirm},
+                        json={
+                            "email": st.session_state["email"],
+                            "token": mfa_confirm,
+                            "referrer": getenv("APP_URI"),
+                        },
                     )
                     if response.status_code == 200:
                         data = response.json()
