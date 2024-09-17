@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import uuid
 import logging
 import html
 import re
@@ -120,7 +121,7 @@ class AGiXTSelectors:
             self.skip_args.append("input")
         return {
             arg: st.text_area(
-                arg, value=prompt.get(arg, ""), key=f"{arg}_{step_number}"
+                arg, value=prompt.get(arg, ""), key=f"{arg}_{step_number}_{uuid.uuid4()}"
             )
             for arg in args
             if arg not in self.skip_args
