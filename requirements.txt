@@ -6,5 +6,5 @@ urllib3==2.2.2
 requests
 pycryptodome
 pyotp
-qrcode
+qrcode==7.4.2
 pyjwt
