@@ -14,6 +14,13 @@ st.set_page_config(
     page_icon=":robot:",
     layout="wide",
     initial_sidebar_state="expanded",
+    theme={
+        "primaryColor": "#4CAF50",
+        "backgroundColor": "#F0F0F0",
+        "secondaryBackgroundColor": "#E0E0E0",
+        "textColor": "#333333",
+        "font": "sans-serif"
+    }
 )
 ApiClient = get_agixt()
 if not ApiClient:

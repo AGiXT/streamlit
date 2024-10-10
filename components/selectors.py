@@ -8,6 +8,7 @@ import base64
 import json
 from components.docs import predefined_memory_collections
 from agixtsdk import AGiXTSDK
+from Globals import getenv
 
 
 class AGiXTSelectors:
@@ -23,6 +24,13 @@ class AGiXTSelectors:
             "working_directory",
             "helper_agent_name",
         ]
+        self.theme = {
+            "primaryColor": getenv("PRIMARY_COLOR"),
+            "backgroundColor": getenv("BACKGROUND_COLOR"),
+            "secondaryBackgroundColor": getenv("SECONDARY_BACKGROUND_COLOR"),
+            "textColor": getenv("TEXT_COLOR"),
+            "font": getenv("FONT")
+        }
 
     def cached_get_extensions(self):
         return self.sdk.get_extensions()
