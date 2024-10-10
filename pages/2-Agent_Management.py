@@ -94,6 +94,13 @@ with col2:
             provider_settings,
         )
 
+    # Add auto_continue setting
+    auto_continue = st.checkbox(
+        "Auto Continue",
+        value=agent_settings.get("auto_continue", "false") == "true",
+    )
+    provider_settings["auto_continue"] = "true" if auto_continue else "false"
+
     st.subheader("Text to Speech Provider")
     tts_providers = ApiClient.get_providers_by_service("tts")
     tts_providers = ["None"] + tts_providers
