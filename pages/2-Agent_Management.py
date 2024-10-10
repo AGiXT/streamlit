@@ -200,12 +200,7 @@ with col3:
                     f"{setting}:", value=agent_settings.get(setting, "")
                 )
 
-            # Add auto_continue setting
-            auto_continue = st.checkbox(
-                "Auto Continue",
-                value=agent_settings.get("auto_continue", "false") == "true",
-            )
-            provider_settings["auto_continue"] = "true" if auto_continue else "false"
+
             st.subheader("Commands")
             for command in extension["commands"]:
                 command_enabled = st.checkbox(
@@ -262,6 +257,14 @@ if chat_completions_mode == "command":
         )
     else:
         command_variable = ""
+
+# Add auto_continue setting under Advanced Settings
+st.header("Advanced Settings")
+auto_continue = st.checkbox(
+    "Auto Continue",
+    value=agent_settings.get("auto_continue", "false") == "true",
+)
+provider_settings["auto_continue"] = "true" if auto_continue else "false"
 
 if st.button("Save Agent Settings"):
     settings = {
