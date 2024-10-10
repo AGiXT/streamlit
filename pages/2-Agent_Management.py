@@ -94,12 +94,7 @@ with col2:
             provider_settings,
         )
 
-    # Add auto_continue setting
-    auto_continue = st.checkbox(
-        "Auto Continue",
-        value=agent_settings.get("auto_continue", "false") == "true",
-    )
-    provider_settings["auto_continue"] = "true" if auto_continue else "false"
+
 
     st.subheader("Text to Speech Provider")
     tts_providers = ApiClient.get_providers_by_service("tts")
@@ -204,6 +199,13 @@ with col3:
                 extension_settings[setting] = st.text_input(
                     f"{setting}:", value=agent_settings.get(setting, "")
                 )
+
+            # Add auto_continue setting
+            auto_continue = st.checkbox(
+                "Auto Continue",
+                value=agent_settings.get("auto_continue", "false") == "true",
+            )
+            provider_settings["auto_continue"] = "true" if auto_continue else "false"
             st.subheader("Commands")
             for command in extension["commands"]:
                 command_enabled = st.checkbox(
