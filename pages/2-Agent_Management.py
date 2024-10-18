@@ -261,6 +261,12 @@ auto_continue = st.checkbox(
 )
 provider_settings["auto_continue"] = "true" if auto_continue else "false"
 
+include_sources = st.checkbox(
+    "Include Sources as Activities prior to responses",
+    value=agent_settings.get("include_sources", "false") == "true",
+)
+provider_settings["include_sources"] = "true" if include_sources else "false"
+
 if st.button("Save Agent Settings"):
     settings = {
         "provider": selected_language_provider,
