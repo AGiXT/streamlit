@@ -256,7 +256,7 @@ if chat_completions_mode == "command":
         command_variable = ""
 
 auto_continue = st.checkbox(
-    "Auto Continue",
+    "Auto Continue on Long Responses",
     value=agent_settings.get("auto_continue", "false") == "true",
 )
 provider_settings["auto_continue"] = "true" if auto_continue else "false"
