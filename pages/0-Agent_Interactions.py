@@ -44,8 +44,7 @@ mode = st.selectbox(
 )
 
 # Agent selection for non-chain modes
-if mode != "Chains":
-    agent_name = selectors.agent_selection()
+agent_name = selectors.agent_selection() if mode != "Chains" else ""
 
 # Prepare arguments for the selected mode
 args = {}
@@ -60,6 +59,20 @@ if mode == "Prompt":
         "User  Input"
     )  # Capture user input for Prompt mode
 
+# Handling non-chain modes
+if mode != "Chains":
+    if st.button("Send"):
+        args["conversation_name"] = st.session_state["conversation"]
+        with st.spinner("Thinking, please wait..."):
+            response = ApiClient.prompt_agent(
+                agent_name=agent_name,
+                prompt_name=args["prompt_name"],
+                prompt_args=args,
+            )
+            if response:
+                st.rerun()
+
+# Handling Chains mode
 if mode == "Chains":
     chain_names = ApiClient.get_chains()
     agent_override = st.checkbox("Override Agent")
@@ -88,26 +101,7 @@ if mode == "Chains":
     chain_name = args["chain"] if "chain" in args else ""
     user_input = args["input"] if "input" in args else ""
 
-# Button to send user input
-if st.button("Send"):
-    if mode != "Chains":
-        args["conversation_name"] = st.session_state["conversation"]
-        with st.spinner("Thinking, please wait..."):
-            response = ApiClient.prompt_agent(
-                agent_name=agent_name,
-                prompt_name=args.get("prompt_name", "default"),
-                prompt_args={
-                    **args,
-                    "user_input": args.get("user_input", ""),
-                },  # Ensure user_input is included
-            )
-            if response:
-                st.success("Response received:")
-                st.write(response)
-            else:
-                st.error("Failed to get a response.")
-
-    elif single_step:
+    if single_step:
         if st.button("Run Chain Step"):
             if chain_name:
                 responses = ApiClient.run_chain_step(
