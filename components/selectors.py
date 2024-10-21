@@ -244,7 +244,7 @@ class AGiXTSelectors:
         }
 
     def prompt_selection(
-        self, prompt: dict = {}, step_number: int = 0, show_user_input: bool = True
+        self, prompt: dict = {}, step_number: int = 0, show_user_input: bool = False
     ):
         prompt_categories = self.sdk.get_prompt_categories()
         prompt_category = st.selectbox(
