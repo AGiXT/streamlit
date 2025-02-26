@@ -15,7 +15,6 @@
 ![AGiXT_New](https://github.com/user-attachments/assets/14a5c1ae-6af8-4de8-a82e-f24ea52da23f)
 
 
-
 This repository is for the [AGiXT](https://github.com/Josh-XT/AGiXT) Streamlit Web UI.
 
 ## Getting Started
