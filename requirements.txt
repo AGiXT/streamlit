@@ -2,7 +2,7 @@ streamlit
 streamlit_js_eval
 agixtsdk==0.0.71
 python-dotenv==1.0.0
-urllib3==2.2.2
+urllib3==2.6.3
 requests
 pycryptodome
 pyotp
